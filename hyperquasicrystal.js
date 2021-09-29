@@ -62,7 +62,7 @@ const hyperquasicrystal = (function(){
 		//then break ties between y and z by how y.green vs z.green is sorted,
 		//then break ties by how y.blue vs z.blue is sorted,
 		//and if those all sort the same then its the same node.
-		//That maps all possible halted lambdas 1-and-1 with the integers.
+		//That maps all possible halted lambdas 1-to-1 with the integers.
 		//But as a javascript optimization, I'm just going to make up an id.
 		//If you want the godel-like-numbering, the lambdas can compute it about eachother.
 		this.id = newId();
@@ -96,8 +96,6 @@ const hyperquasicrystal = (function(){
 	const bootCp = function(green, blue){
 		return new fn(green, blue);
 	};*/
-	
-	const cpp = function(green, blue){
 	
 	//u aka leaf aka "the universal lambda/combinator/patternCalculusFunction".
 	const u = new fn();
@@ -181,7 +179,7 @@ const hyperquasicrystal = (function(){
 	//and theres many possible ways in finite time and memory to prove a lambda call does not halt,
 	//but in many cases it would cost infinite time andOr memory. This time its easy to know.
 	//(LazyEval (S I I) (S I I)).red==leaf.
-	funcThatInfiniteLoopsForAllPossibleParams.red = leaf;
+	funcThatInfiniteLoopsForAllPossibleParams.red = u;
 	
 	//TODO other than garbcol and dedup etc (problems in javascript that wont exist in all implementations
 	//such as on GPU, a quantum manifold, automata processors, etc),
@@ -193,10 +191,23 @@ const hyperquasicrystal = (function(){
 		this.green = null; //from.green
 		this.blue = null; //from.blue
 		this.red = null; //from.red
-		this.fromIsLeaf = false; //from.blue==from aka from.isLeaf()
-		this.greenIsLeaf = false;
-		this.blueIsLeaf = false;
-		this.redIsLeaf = false;
+		
+		/*
+		//split each isLeaf var into 2 bits so if, while threadOpcode is 0,
+		//the fn pointers are copied from another thread, or are left as null,
+		//then both can be false to say its unknown if thats leaf or not.
+		//FIXME theres probably a far more efficient way to do this, such as this.green==u.
+		this.fromIsCertainlyLeaf = false; //from.blue==from aka from.isLeaf()
+		this.fromIsCertainlyNotLeaf = false; //from.blue==from aka from.isLeaf()
+		this.greenIsCertainlyLeaf = false;
+		this.greenIsCertainlyNotLeaf = false;
+		this.blueIsCertainlyLeaf = false;
+		this.blueIsCertainlyNotLeaf = false;
+		this.redIsCertainlyLeaf = false;
+		this.redIsCertainlyNotLeaf = false;
+		*/
+		
+		//threadOpcode is idempotent and is a constraint, not something that happens at a time.
 		//threadOpcode of 0 means do nothing, so can freely change this.from, this.green, this.blue, and this.red.
 		//threadOpcode of 1 reads this.green and this.blue then writes this.from.
 		//threadOpcode of 2 reads this.from and writes this.green and writes this.blue.
