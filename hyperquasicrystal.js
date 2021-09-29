@@ -27,14 +27,23 @@ const hyperquasicrystal = (function(){
 	//pattern match to fix them, in theory.
 	const fn = function(green, blue, red){
 		
+		//Starts as another fn, except during boot.
+		//In neuralnet, this would be a stochastic matrix row, size 1, with a chance of 1, aka a hard pointer.
+		//
 		//left child. If this is leaf,
 		//then left child is identityFunc (FI leaf), see FI opcode.
 		this.green = green;
 		
+		//Starts as another fn, except during boot.
+		//In neuralnet, this would be a stochastic matrix row, size 1, with a chance of 1, aka a hard pointer.
+		//
 		//right child. If this is leaf, then right child is leaf.
 		this.blue = blue;
 		
-		//if this called on leaf halts (returns y),
+		//Normally starts undefined (todo should that be null or is undefined ok?).
+		//In neuralnet, this would start as a random stochastic matrix row to random fns then converge if needed.
+		//
+		//If this called on leaf halts (returns y),
 		//then red is (leaf y), else does not halt and red is leaf.
 		//The red edge is at 1 higher cardinality than lambdas
 		//so cant always be computed exactly by lambdas,
@@ -42,6 +51,156 @@ const hyperquasicrystal = (function(){
 		//getting more accurate over time
 		//especially if you have infinite time and infinite memory.
 		this.red = red;
+		
+		//OLD comment of this.o8 before it became this.o7...
+		//
+		//integer from 1 to 255 that means a bitstring of 0-7 bits, for the params each being u vs anything_except_u,
+		//or 0 to mean error or hasnt been filled in yet or unknown cuz neuralnet might have accidentally
+		//made it longer than the max allowed of 6 params. Its a 7 param universal function but never has more than 6
+		//params when observed cuz only halted lambdas are stored, and instead would view those others as LazyEvals,
+		//where Z/LazyEval is one of the opcodes.
+		//
+		//FIXME is it actually o7, number from 1 to 127, since only 0-6 params (of 7) are supposed to ever be stored?
+		//
+		//u.o8==1 aka the leaf has no params yet, is waiting on 7 params before it evals.
+		//x.o8 == x.green.o8*2+(x.blue.o8==1 ? 1 : 0); //slide earlier params up and put the next bit in the ones place.
+		//this.o8 = 0;
+		//
+		//
+		
+		//This is a cache of the forest shape, including only green and blue edges.
+		//
+		//integer from 1 to 127 that means a bitstring of 0-6 bits, for the params each being u vs anything_except_u,
+		//or 0 to mean error or hasnt been filled in yet or unknown cuz neuralnet might have accidentally
+		//made it longer than the max allowed of 6 params. Its a 7 param universal function but never has more than 6
+		//params when observed cuz only halted lambdas are stored, and instead would view those others as LazyEvals,
+		//where Z/LazyEval is one of the opcodes.
+		//
+		//Leaf is 1. (leaf leaf) is 10. (leaf <nonleaf>) is 11. (leaf leaf leaf) is 100. (leaf leaf <nonleaf>) is 101...
+		//aka https://en.wikipedia.org/wiki/Binary_heap indexing.
+		//
+		//If (green===undefined || green==null) then this is the leaf so this.o7 gets set to 1,
+		//else append a bit in the ones place.
+		//u.o7==1 aka the leaf has no params yet, is waiting on 7 params before it evals.
+		//x.o7 == x.green.o7*2+(x.blue.o7==1 ? 1 : 0); //slide earlier params up and put the next bit in the ones place.
+		//
+		this.o7 = (green ? ((this.green.o7<<1)|((this.blue.o7==1) ? 1 : 0)) : 1);
+		//
+		//
+		//About https://en.wikipedia.org/wiki/Binary_heap indexing and urbit_nock (an alternative universal function).
+		//A transfinite turing complete quasicrystal could be made for urbit_nock the same way its made for
+		//this 7 param universal function.
+		//The only requirement is a universal function be a universal lambda, combinator, and pattern-calculus function.
+		//
+		//BTW urbit_nock uses that kind of indexing for pointer math in its binary forest.
+		//This universal function could emulate urbit_nock, but urbit_nock could not emulate this,
+		//cuz this is at 1 higher cardinality than lambdas and also contains the cardinality of lambdas.
+		//Both are deterministic.
+		//Urbit could emulate at least the parts of this
+		//which exclude red edges that point at u/leaf (lazy call would not halt)
+		//and some of the nonhalting depending if it were combined with some kind of axioms to prove things about halting and nonhalting,
+		//but if it didnt have such axioms built in, just allowed any lambda to be an axiom (which it could easily do)
+		//then urbit_nock would be able to prove true equals false but you could limit which lambdas you call
+		//on which lambdas to avoid that but you might not have chosen flexible enough axioms
+		//so some red edges would still be unproveable.
+		//In this transfinite model of computing, things halting or not is a direct statement
+		//that can flow up and down "the stack" (which may be made of lambdas, on "the heap") which may occurs
+		//after an infinite number of compute cycles and infinite amount of memory or may occur near instantly.
+		
+		
+		//
+		//
+		/*
+		if(green && blue){ //normal
+			this.o8 = (this.green.o8<<1)|((this.blue.o8==1) ? 1 : 0);
+		}else{
+			//hasnt booted yet, so this is u or IdentityFunc or that one cycle between them.
+			//Will fill in o8 of those during boot.
+			this.o8 = 0;
+		}*/
+		
+		
+		//like a debuggerBreakpoint step, toward filling in this.red. STEP_EDGE.
+		//FIXME I'm unsure how many kinds of stepA stepB stepC... edges are needed.
+		//Every edge has to be defined for every fn in abstract math
+		//(but in practice can leave any of them as nulls except except green and blue).
+		//
+		//L, R, A/IsLeaf, T, F, and P/Pair dont need a step edge, so just point step to u/leaf in those cases.
+		//The other 3 opcodes (sixParamLambda, Z/LazyEval, and S) need a STEP edge (hopefully just 1).
+		//
+		//(S b c d)->((b d)(c d)), so STEP would be (Z (Z b d) (Z c d)).
+		//this.step.red may be filled in later or not (could use javascript stack andOr neuralnet to do that,
+		//though if its neuralnet then each edge is intead 1 row of a stochasticMatrix
+		//aka a sparse map of fn to chance,
+		//where chances sum to 1, the chance that the edge of that color is to that node).
+		//(Z b d).red and (Z c d).red would be used to compute (Z (Z b d) (Z c d)).red.
+		//(Z b d).step would be "higher on the stack".
+		//If (Z b d).red==u then (Z (Z b d) (Z c d)).red==u cuz if it doesnt halt higher on stack
+		//then it also doesnt halt lower on stack,
+		//therefore, in abstract math, this is a transfinite stack which can return "does not halt" aka red==u.
+		//(Z (S b c) d).red == (Z (Z b d) (Z c d)).red ??? todo verify ???
+		//That seems to handle the STEP_EDGE S.
+		//
+		//Do the same for sixParamLambda aka (La.Lb.Lc.Ld.Lx.Ly.Lz.a(Pair(uabcdxy)z)) happens when a!=u.
+		//Trying to fill in (Z (u a b c d x y) z).red, where a!=u.
+		//BTW Z is lazyEval and z is just the last param, TODO rename cuz confusing.
+		//P is Pair. Z is LazyEval. A is IsLeaf. u is the leaf.
+		//It evals to (u (a (P (u a b c d x y) z))) if (a (P (u a b c d x y) z)) halts, else evals to u,
+		//but leave the wrapping in u to the last step of the red edge. Just get the return val for now.
+		//Want to compute (a (P (u a b c d x y) z)).
+		//(u a b c d x y) is already halted cuz it has less than 7 params (has 6), and so is z, so no need to LazyEval those.
+		//u is the universal function that takes 7 params, curried one at a time.
+		//(Z a (P (u a b c d x y) z)).red.blue == (u a b c d x y z) if (u a b c d x y z) halts.
+		//If it does not halt then that .red.blue is u cuz u.blue is u, but thats not much relevant here.
+		//Whats relevant is that .red is u if (u a b c d x y z) does not halt.
+		//If a!=u then: (Z (u a b c d x y) z).red == (Z a (P (u a b c d x y) z)).red ??? todo verify ???
+		//That seems to handle the STEP_EDGE for sixParamLambda.
+		//
+		//
+		//Do the same for Z/LazyEval...
+		//Trying to fill in (Z i j).red.
+		//This needs to know the opcode of i,
+		//since after the first 4 (of 7) params, opcode always copies from green/leftChild.
+		//View the first 4 params, each being u vs anything_except_u, as a 4 bit opcode,
+		//or more generally view 0-7 params as an 8 bit opcode that includes a bit for each of 0-7 params
+		//then a high 1 bit, so in 8 bits you can store all possible bitstrings of 0-7 bits.
+		//0 never occurs in those 8 bits since it lacks a high 1 bit.
+		//UPDATE: Its 7 bits, not 8. Its the this.o7 var, which is a cache of the forest shape.
+		//Trying to fill in (Z i j).red.
+		//i.o7 is an integer 1..1111111 (in binary).
+		//o8 would take a bit from j.
+		//o8==(i.o7<<1)|((j.o7==1) ? 1 : 0);
+		//There is no node which can have an o8 cuz its not halted,
+		//but it would be cp(i,j).o8==((i.o7<<1)|((j.o7==1) ? 1 : 0)).
+		//4 of those bits tell which of 9 lambdas (of 7 params each) to do,
+		//or if it doesnt have enuf params yet, then step just points at u/leaf.
+		//Actually, dont need o8 cuz the 4 bits needed are also in o7. The 4 bits needed are in o5.
+		//Theres always a high 1 bit, so ignore that one.
+		//...
+		//this.step can do 10 different things, depending on o7.
+		//Theres the first 8 opcodes (S T F L R IsLeaf Pair LazyEval, but not in that order, TODO rewrite this comment line).
+		//Theres sixParamLambda.
+		//Theres not_enuf_params_so_instantly_trivially_halted, in which case this.step becomes leaf.
+		//...
+		//That seems to handle the STEP_EDGE for sixParamLambda.
+		//
+		//That seems to define STEP_EDGE in all possible cases. The transfinite stack appears
+		//consistent and to only need 1 STEP edge per node, so GREEN BLUE RED STEP
+		//are 4 (instead of 3, thought it was going to be) edge colors.
+		//Each STEP does potentially an infinite number of time cycles, infinite amount of memory,
+		//then returns, aka transfinite but can also do finite normal lambda calculations.
+		//This can be done in any order, as constraints, especially by energyFunc(sparseStochasticMatrix[4+extraEdgeTypesForNeuralnetsInternalCalculations]).
+		//...but wont know for sure until it passes testcases.
+		//TODO Copy and modify some of the testcases from wikibinator
+		//which is a more complex but similar universal function.
+		//
+		//About this line of code "this.step = ((this.o7>0) && (this.o7<64) && u) ? u : null;":
+		//Could just have this.step always start as null, and it would work. This is an optimization:
+		//If u exists (is not booting) and is waiting on at least 2 more params
+		//(so calling this on u would be trivially instantly halted), then instantly fill
+		//in this.step==u, else leave this.step as null to be filled in later if ever.
+		//
+		this.step = ((this.o7>0) && (this.o7<64) && u) ? u : null;
 		
 		//javascript optimization.
 		//The godel-like-numbering of the lambdas are too big a number to put here,
@@ -79,7 +238,8 @@ const hyperquasicrystal = (function(){
 	};
 	
 	fn.prototype.isLeaf = function(){
-		return this.blue==this;
+		//return this.blue==this;
+		return this.o8==1;
 	};
 	
 	//no 2 fns x and y can exist where (x.green==y.green && x.blue==y.blue).
@@ -173,6 +333,15 @@ const hyperquasicrystal = (function(){
 	
 	const callParamOnItself = cp(S,I,I);
 	const funcThatInfiniteLoopsForAllPossibleParams = cp(Z,callParamOnItself,callParamOnItself);
+	
+	const iota = cp(P,S,T); //This universal function https://en.wikipedia.org/wiki/Iota_and_Jot
+	//TODO verify (iota iota x)->x, for any randomly chosen lambda x cuz (iota iota) is an identityFunc.
+	//(iota iota) and (F u) are both identityFuncs.
+	//There can also be multiple equals funcs that do not equal eachother but each equals itself,
+	//and they all agree on what equals what.
+	//Equality is by the forest shape of green and blue edges.
+	//Its a forest other than the cycles that exist if you include the green and blue edges from leaf.
+	//Red of course has an infinite variety of cycles but red is derived so does not affect godel-like-numbering.
 	
 	//red edge from [a lazyeval of x y] to leaf means (x y) does not halt.
 	//Similarly, anything which calls (x y) can also be marked as nonhalting,
