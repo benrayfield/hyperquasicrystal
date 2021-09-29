@@ -128,7 +128,18 @@ const hyperquasicrystal = (function(){
 		//L, R, A/IsLeaf, T, F, and P/Pair dont need a step edge, so just point step to u/leaf in those cases.
 		//The other 3 opcodes (sixParamLambda, Z/LazyEval, and S) need a STEP edge (hopefully just 1).
 		//
-		//(S b c d)->((b d)(c d)), so STEP would be (Z (Z b d) (Z c d)).
+		//(S b c d)->((b d)(c d)), so STEP would be (Z (Z b d) (Z c d)) <--WRONG. FIXME need recursive lazyeval.
+		//Something like Lx.Ly.Lz.(x u)(y u), and to put a literal lambda in use (T thatLiteral).
+		//STEP would be (Z (Z (T b) (T d)) (Z (T c) (T d))). Notice theres no T around the Z inside Z,
+		//cuz outer Z calls (Z leaf) and inner Z calls (T b leaf) aka ((T b) leaf) which evals to b.
+		//
+		//OLD: const Z = op6; //Lx.Ly.Lz.xy aka LazyEval. (LazyEval x y).red==(leaf (x y)) if (x y) halts else == leaf.
+		//NEW: const Z = op6; //Lx.Ly.Lz.(x u)(y u) aka LazyEval. (LazyEval (T x) (T y)).red==(leaf (x y)) if (x y) halts else == leaf.
+		//NEW: ((LazyEval (LazyEval (T a) (LazyEval (T b) (T c))) (T d)) u) -> (a(bc)d).
+		//
+		//
+		//FIXME update comments below cuz of that slightly changed lazyeval/Z op.
+		//
 		//this.step.red may be filled in later or not (could use javascript stack andOr neuralnet to do that,
 		//though if its neuralnet then each edge is intead 1 row of a stochasticMatrix
 		//aka a sparse map of fn to chance,
@@ -328,7 +339,9 @@ const hyperquasicrystal = (function(){
 	const R = cp(op3,u,u);
 	const A = cp(op4,u,u); //isLeaf. (isLeaf leaf)->T. (isLeaf anything_except_leaf)->F.
 	const P = op5; //Lx.Ly.Lz.zxy aka the church-pair lambda
-	const Z = op6; //Lx.Ly.Lz.xy aka LazyEval. (LazyEval x y).red==(leaf (x y)) if (x y) halts else == leaf.
+	//const Z = op6; //Lx.Ly.Lz.xy aka LazyEval. (LazyEval x y).red==(leaf (x y)) if (x y) halts else == leaf.
+	const Z = op6; //Lx.Ly.Lz.(x u)(y u) aka LazyEval. (LazyEval (T x) (T y)).red==(leaf (x y)) if (x y) halts else == leaf.
+	//((LazyEval (LazyEval (T a) (LazyEval (T b) (T c))) (T d)) u) -> (a(bc)d).
 	const S = op7; //Lx.Ly.Lz.xz(yz) aka the S lambda
 	
 	const callParamOnItself = cp(S,I,I);
