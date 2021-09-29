@@ -1,11 +1,30 @@
 //Ben F Rayfield offers this software as opensource MIT license.
 //a 7 parameter universal lambda, combinator, and pattern-calculus function,
 //designed to be computed as energyFunction(sparseStochasticMatrix[n]) approximating
-//an infinite directedGraph with n edge types,
+//a specific constant (so no mutable vars, except in the optimizations)
+//infinite directedGraph which has only 1 automorphism (the least possible)
+//with n edge types (at least the red green and blue edges
+//are constant and are the API for how normal programs can call the lambdas on eachother),
 ///including the red, green, and blue edge types in this javascript implementation
 //of the universal function, so n is at least 3, and n will be maybe 5-20
 //so the neuralnet has more ways to figure out how to pattern-match the red, green, and blue edges.
 //You only need red, green, and blue edges to compute the lambdas. All else is optimizations.
+//No data is ever added to or removed from the network or changed.
+//Instead many people and computers together can navigate the space of possible functions
+//which can have forexample 256 bit ids generated from their lambda call pair forest shape,
+//useable like hashtags with a random-appearing number that names the function,
+//so you could call a #hashtagw4353q4534534 on a #hashtag9845734252348234 and it returns a #hashtagw435356456343234
+//which could be replaced by human readable names or be an interactive program window
+//whose graphics are generated per bit in a pixel by lambdas and sounds per wave amplitude bit...
+//depending on which kind of optimizations the various hyperquasicrystal VMs
+//(such as theres many java VMs that all run java, or multiple browsers that run the same webpages,
+//some hyperquasicrystal VMs may optimize for GPU, some optimize for neuralnet hypercomputation
+//(just 1 level up in hypercomputation and only approximation of it), some optimize for
+//forest of (double,double)->double calculations like you can run any musical instrument or visual fractal on,
+//or other hardware, it could in theory form a model of any existing hardware and be an operating system,
+//though such uses would probably be very slow for a long time while new kinds of optimizations are possibly discovered.
+//Javascript with compiling to GPU.js and to js eval, seem to be a good place to start,
+//something with interactive graphics like emulating github.com/benrayfield/hypercubewave across a multiplayer game.
 const hyperquasicrystal = (function(){
 	
 	//doesnt work yet. TODO...
@@ -360,7 +379,8 @@ const hyperquasicrystal = (function(){
 	//Similarly, anything which calls (x y) can also be marked as nonhalting,
 	//and theres many possible ways in finite time and memory to prove a lambda call does not halt,
 	//but in many cases it would cost infinite time andOr memory. This time its easy to know.
-	//(LazyEval (S I I) (S I I)).red==leaf.
+	//NEW: (LazyEval (T (S I I)) (T (S I I))).red==leaf.
+	//OLD: (LazyEval (S I I) (S I I)).red==leaf.
 	funcThatInfiniteLoopsForAllPossibleParams.red = u;
 	
 	//TODO other than garbcol and dedup etc (problems in javascript that wont exist in all implementations
