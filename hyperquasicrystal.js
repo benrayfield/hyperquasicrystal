@@ -1,3 +1,169 @@
+SOLUTION??? 4 edgetypes: green blue red, and if you try to look across red when you dont have enough cardinality you instead get a specific response saying you dont have enough cardinality. Every edge can be proven, and every wrong edge can be disproven, in the hyperquasicrystal of 3 edge types between an infinite number of nodes. Nodes dont have cardinality. An equals function can be derived that measures equality between any 2 nodes, including itself.
+FIXME??? Everything is 3-way-calls <hylevInteger func param>, but can only see the green and blue edges, and there is some 3way lambda call that generates any specific red edge, that could be done programmatically, and every node can be used with every node, but for every lambda call there is some red edge which is at a higher cardinality (on stack, not in the nodes themselves which only have debuggersteps/lazyevals/etc of that) which if the lower cardinality 3-way-call asked about it, would get the response "caller is not high enough cardinality to get this answer".
+Equals function works on any 2 nodes, regardless of hylev/cardinality/etc. Nodes dont have cardinality. Only 3-way-calls do, and 3-way-calls dont exists except as lazyevals.
+..
+TODO create an opGetNameOfThisUniversalFunction, which might return "hyperquasicrystal_simplest" or "hyperquasicrystal_withWikiAndAxConstraints" or "someOtherSystemXYZversion5.32.1", etc. Different systems dont touch eachother that way, but makes it easier to organize opensource forks, and any 2 hyperquasicrystals can be outerjoined  by creating more edgetypes and possibly other databaselike ops.
+...
+TODO do I want opWiki, getCx, isClean, etc? Wiki should be thought of as a choice between all possible (including nonunitary) mappings of integer->integer, but we dont know which mapping it is yet as its something that grows sparsely in a p2p network, and it makes things harder to sync since people and computers can disagree on which integer->integer it is, which is why the isClean area uses wiki as integer->nonhaltingOrSomeConstant as if there is no opWiki at all.
+..
+in this system, you casn have a lazyEvalOfDoesPEqualNP and a lazyEvalOfAreThereAnInfiniteNumberOfTwinPrimes and can call (ifElse (and lazyEvalOfDoesPEqualNP lazyEvalOfAreThereAnInfiniteNumberOfTwinPrimes) ifTrue... ifFalse...), though there may be a few more lambdas inside of that to handle literal vals vs lazy vals etc. You can of course make an eval(codeString) function for any syntax you like.
+..
+put in an opWiki, and opIsClean, and all the other "complicated stuff" optionally goes in opWiki, or if opIsClean, then all that stuff is trivially nonhalting so is pure deterministic.
+...
+TODO compile the 3-edgetype directedgraph to a 1-edgetype undirectegraph (entirely timeless and directionless) and compile it to run on opticalcomputers, quantumcomputers, or possibly new or other kinds of computers.
+
+
+
+
+
+
+
+
+SOLUTION?
+use (Pair hylevInteger aLazyEval)--red-->someNode, and red would just point at leaf if its not such a datastruct.
+..
+Lambda calls would need a way to cross the red edge programmatically. It could only do so if such lambda call was at hylevInteger+1 or more, else the red edge would go to leaf (does not halt) OR maybe the red edge should tell between ["did not halt", "caller didnt have enough cardinality", or "halted by this returnVal"], so that way lambda calls could check if something had enough cardinality.
+..
+Also I still want opLazyEval to have cx, so (opLazyEval requestedHylevInteger cx func param ignore), which has to be 3-way-called as <actualHylevInteger func param>, and actualHylevInteger may differ from requestedHylevInteger and either can be bigger. What it must return (if you have enuf compute resources to explore the directedGraph) is well defined (todo) either way.
+..
+Also I want an op for making hylevintegers that doesnt require the surrounding pair, so (hylev5 aLazyEval)--red-->something, and hylev5 is (opHylev hylev4), and so on, and opHylev takes 2 params so its trivially halted at 1 param, or maybe it should be part of opLazyEval. These are details easy to work out.
+..
+Maybe the 3 ways of returning something from red edge ["did not halt", "caller didnt have enough cardinality", or "halted by this returnVal"] should be 3 ops.
+..
+Is it back to only 3 edgetypes (green blue red)?
+...
+
+
+
+
+
+
+Maybe to fix that, think of quasicrystal nodes as a 2d grid (1d horizontal grid lists every node, as usual, vertical direction is cardinality, and from each (integer,integer) point in the 2d grid it points at an integer. so (integer,integer)->integer would be the red edges, and integer->integer for green and blue edges. Do I want that? Could use (Pair hylevInteger aLazyEval)--red-->someNode, and red would just point at leaf if its not such a datastruct.
+WAIT, FIXME, you need 1 red edge per cardinality, even though opLazyEval may choose to lower cardinality.
+THOUGHT WAS SOLUTION[
+I can easily move the hylev number to a param of a doesItHalt op, and make everything be 3-way (or 4-way if also want cx) lambda calls, where nonneginteger cardinality (as unary linkedlist) is 1 of the 3 things called together: <hylevInteger cx func param>. That way, there are no cardinalities in halted lambdas but it can still exactly represent isPEqualNP (which returns t or f) if its called with a high enough cardinality. If its called at a lower cardinality, it doesnt halt.
+YES, DO THAT. AND KEEP THE RED EDGES.
+..
+Keep it as 4-way-calls: <hylevUnaryInteger,cx,func,param>. A call is never stored, since everything is halted. So opLazyEval would store those as 4 curries which each have a L/green and R/blue edge but do not have a hylevUnaryInteger or cx edge. Its still a binary forest, which the merkle ids are made of.
+There will still be getCardinality op, which defines a relation between debuggersteps/lazyevals/etc, but theres actually no cardinality except "on the stack", and the stack exists only in halted lambdas that define lazyevals.
+]
+
+
+
+TODO very important, can all those hylevs (hypercomputation levels, and those above infinite hylev etc)... can all that be emulated in the first 2 hylevs? That question should have the same answer as, is there a isPEqualNP node at hylev1-2 which emulates higher hylevs by building emulators that call emulators (as a request that the next higher hylev may choose to do), but never more than 1 emulator deep at a time?
+..
+isPEqualNP is basically a triple-loop (each of infinite size) over triples <whichP,possibleNPSolver,possibleNPQuestion>, and it checks in finite time does (possibleNPSolver possibleNPQuestion) get the right answer within (exponent (sizeof possibleNPQuestion) whichP) cycles. So basically view it as a 3d grid of bits, where its a 1 if (possibleNPSolver possibleNPQuestion) does that within whichP time, else its a 0. It looks for a constant possibleNPSolver and a constant possibleNPSolver and an infinite size row of all 1s in the possibleNPQuestion dimension. I can write that using hyperquasicrystal nodes even without merging all the hylevs into just 2 hylevs, but I want to merge them cuz it would make it much simpler to use, easier for people and neuralnets to understand.
+..
+Lets start with something simpler. Given a func x of 2 integers y z to t/f, so (x y z), make a node that answers t or f meaning does there exist any constant y where all (x y z)->t? This seems to need hylev2-3 cuz its a double-loop with doesItHalt/redEdge called inside a doesItHalt/redEdge. Can it be done at hylev1-2?
+Given x and y, hylev1-2 can answer does all (thatConstantX thatConstantY z)->t. It can do that using a red edge at hylev0-1, a red edge that halts if it finds any (thatConstantX thatConstantY z)->f.
+We need to halt when find something that doesnt halt. hylev1-2 can easily do that, but if there is no such nonhalter then hylev1-2 would not halt.
+Maybe hylev2-3 could emulate everything, since it can copy things between the 2 hylevs below it (but if so, need a harder test cuz it would have to emulate at least hylev3-4)?
+Lets use the kind of statement (for b forall c exists d forall e exists g forall h exists j, where (b c d e g h)->u, or where (b [c d e g h])->u where [...] is a linkedlist syntax, which are 2 different problems but the linkedlist kind seems easier.
+Is there any hylev3-4 node for that? Each hylev up can trivially solve 1 linkedlist size bigger, of that kind of lambda call. But can hylev3-4 solve all linkedlist sizes?
+You can convert between forall and exists using something that seems similar to https://en.wikipedia.org/wiki/De_Morgan%27s_laws but for infinite things. Given a func of integer to bit that always halts, forall being 0, or forall being 1, you can just halt if you find the opposite, the thing claimed doesnt exist. Exists, you halt when find the thing. So for the cost of 1 hylev up, you can do a forall or exists of any function call thats guaranteed to halt on all those params the forall/exists "loops over".
+A single hylev can loop over any n dimensional tensor where each cell contents is such a func (that always halts) called on the n dimensional position in the tensor, and it returns t or f (or even a float64, as long as its deterministic) based on that nd index. The lambdas are mapped 1 to 1 with the integers and can compute their own integer, so nd index can be any n lambdas, even though thats not an efficient way to compute it, the quasicrystal edges are an efficient way, so sparse pointers and quodels (godel-like-numbering of lambdas including hyper-lambdas) as interchangible.
+<forall b exists c forall d> is not the same as <forall b forall d exists c>.
+But if convert them all to foralls, or convert them all to exists, then could do them with fewer hylevs. That doesnt mean everything can be done with fewer hylevs, but that one kind of thing can.
+<forall b forall derivedFromC forall d> allows reordering to <forall b forall d forall derivedFromC> or any of the 6 possible orders of 3 things. It can also be converted to <forall [b c d]>, and as I wrote earlier, a single forall costs only hylev1-2. So in that case, the use of hylev3-4 for 3 infinitesizeloops/doesItHalts inside eachother, was correct but also wasteful.
+..
+Next, try to write the pseudocode (and later actual code, that neuralnet may be able to approximate), for isPEqualNP at hylev1-2.
+..
+"isPEqualNP is basically a triple-loop (each of infinite size) over triples <whichP,possibleNPSolver,possibleNPQuestion>".
+..
+<exists whichP exists possibleNPSolver forall possibleNPQuestion (someFunc [whichP possibleNPSolver possibleNPQuestion])->t>.
+..
+Do I want to change it to 3 exists, or change it to 3 foralls?
+..
+I'd like to create 2 lambda calls, one that if it halts it proves PNotEqualNP, and the other if it halts it proves PEqualsNP, and guarantee that at least 1 of them halts (cuz P either equals NP or it doesnt), then make a lambda that runs 1 compute step on each, then the next compute step on each, and so on, and whichever halts (guaranteed to happen), it will return t or f for does p equal np or not. In other words, at hylev0 (no red edge needed), a lambda, or I could write it as code in any normal language, evaling this (which may take any huge time but is guaranteed to give an answer, aka this lambda call is guaranteed to halt and to answer p equals? np)... Write this lambda. I'm not sure but it seems that it could be done, unless I missed something in the steps to get here. There is among experts no known lambda which answers p vs np, cuz its a few hypercomputation levels up from lambdas.
+TODO write that lambda.
+..
+Or maybe it can only be solved at hylev1-2? Just write it and find out.
+..
+Merge whichP and possibleNPSolver into a single dimennsion, so its an infinite 2d grid of y=[whichP and possibleNPSolver] and x=possibleNPQuestion and bitVal=(someFunc [[whichP possibleNPSolver] possibleNPQuestion]).
+(someFunc [[whichP possibleNPSolver] possibleNPQuestion]) always halts, so all bits in the 2d grid are specific bit vals.
+..
+isPEqualNP = <exists y forall x (bitAt [y x])>
+..
+<exists y not exists variantOfX (bitAt [y variantOfX])>... something like that. I want all bits in the y row to be only where its proven not to be such a fast solver, and after finding the first "forspecific y exists variantOfX" it moves on to the next forspecific y.
+Whichever is the last y it ever gets to, proves P equals NP and that y is a [whichP possibleNPSolver].
+On the other hand, if there is no "last y", then P does not equal NP (which is far more likely).
+Its nonhalting either way.
+..
+What if all the bits, in the 2d grid, after a "last y" (if that exists), check all the earlier bits (careful not to infloop, not sure that could be done), and if p equals np (which it probably doesnt) then these bits mark that it should halt right away.
+..
+If I could only try to prove one, p equals np vs p does not equal np, I'd rather have it be faster to try to prove p not equals np.
+..
+What if dovetail the ys, looping over the 2d y x grid of bits from a corner expanding a triangle so its guaranteed to reach all squares infinitely in x and infinitely in y. It would eventually mark every y thats NOT a fastNPSolver (as not being a fastNPSolver), and whichever y remains after an infinite number of steps, is a fastNPSolver. But hyperquasicrystal can only --red-->leaf if it doesnt halt, and --red-->(leaf returnVal) if it does halt. Theres not an edgetype for returning from something that doesnt halt, but some combo of hylevs could probably do it.
+..
+Lets get back to, can hylev2-3 emulate higher hylevs?
+..
+I know how to represent isPEqualNP at hylev2-3 by merging the whichP and possibleNPSolver into 1 thing, so thats down 1 hylev from I thought it was at hylev3-4. But it doesnt answer the question of can a constant hylev level emulate higher levels.
+..
+I can easily move the hylev number to a param of a doesItHalt op, and make everything be 3-way (or 4-way if also want cx) lambda calls, where nonneginteger cardinality (as unary linkedlist) is 1 of the 3 things called together: <hylevInteger cx func param>. That way, there are no cardinalities in halted lambdas but it can still exactly represent isPEqualNP (which returns t or f) if its called with a high enough cardinality. If its called at a lower cardinality, it doesnt halt.
+YES, DO THAT. AND KEEP THE RED EDGES. [[[WAIT, FIXME, you need 1 red edge per cardinality, even though opLazyEval may choose to lower cardinality.]]]
+..
+Keep it as 4-way-calls: <hylevUnaryInteger,cx,func,param>. A call is never stored, since everything is halted. So opLazyEval would store those as 4 curries which each have a L/green and R/blue edge but do not have a hylevUnaryInteger or cx edge. Its still a binary forest, which the merkle ids are made of.
+There will still be getCardinality op, which defines a relation between debuggersteps/lazyevals/etc, but theres actually no cardinality except "on the stack", and the stack exists only in halted lambdas that define lazyevals.
+...
+[[[WAIT, FIXME, you need 1 red edge per cardinality, even though opLazyEval may choose to lower cardinality.]]]
+..
+
+
+
+
+---old...---
+
+TODO...
+
+universal func of 8 params... OR, I COULD PUT EDGES ALL IN 1 OP, OR COULD MERGE SOME THINGS. BUT WITH 8, HAVE ROOM FOR TYPEVAL ETC.
+seems its going to need 8 params instead of 7 cuz is a little too many ops for 7. so the first param is now any func of 7 params,
+instead of 6. and theres o8 cache instead of o7, cuz theres never actually 8 params cuz ONLY halted things are nodes. That will
+give room for exploring a few more kinds of edges, if needed. there are some multiple kinds of cardinality to explore.
+(num params, op name) Opcodes I'm planning (todo still adjusting these a little)[
+3 S
+//FIXME 4? is that allowed? 4 Lazyeval //might just implement this as S called on leaf? cuz LazyEval does the same thing as S when called on leaf, but might help prove things that it does the same thing regardless of what its called on.
+	//(Lazyeval cx func param ignore) -> same as fpc.
+4 lazyCfp //used if isCallsAre3ParamsVs2. (fpc func param context)-> what that 3 way call returns.
+	//(lazyCfp cx func param ignore)-> what the 3-way-call <cx func param> returns. If not isCallsAre3ParamsVs2 then cx is always leaf (or this calls with leaf anyways?).
+3 Pair
+3 Typeval //just a semantic, for things like (typeval "image/jpeg" <bytesofjpg>). As a lambda, its the same as Pair.
+2 T
+2 F
+2 Ax
+//2 (crossEdge edgeType fromNode). fromNode must be at a lower cardinality than caller, else do_isItTruncateToCardinalityOrIsItInfloop)
+	//FIXME move all the edge types to 1 param ops? they'd still be hyperquasicrystal edges, but a simpler lambda call would cross them.
+1 getCx //If inside a 3-way-call (such as by lazyCfp) where cx is 1 of those 3, gets the cx. cx exists only "higher in the stack",
+	//but since there is no stack in a quasicrystal except other parts of the quasicrystal,
+	//the cx is in calls of lazyCfp that dont have enuf params to eval yet. nothing ever has enuf params to eval. its all lazy.
+1 Wiki //all nondeterminism goes here but in the clean half of the system there is pure determinism.
+1 L/green
+1 R/blue
+1 red
+1 upCardinalityA
+//1 upCardinalityB
+1 downCardinality
+1 getCardinality //returns a unary number like (leaf (leaf (leaf leaf))). leaf is lowest cardinality.
+	//FIXME theres cardinalities above infinite cardinality. hylev[0-1][allInfinityCardinalities] etc. Can they be emulated by lower cardinalities? Else include some here?
+	//FIXME remove getCardinality op cuz that should be just 1 of the edgeTypes?
+	//FIXME dont have upCardinality op cuz that should be just 1 of the edgeTypes, that the call only works for if caller is higher cardinality?
+1 Isleaf
+1 isAllowAxa //2 halfs of the system where (axa anything) either works as usual vs always infloops.
+1 isCleanAkaIsAllowWiki //2 halfs of the system. the clean half cant see the dirty half. the dirty half can see dirty and clean.
+1 isCallsAre3ParamsVs2 //2 half of the system. in one half, the cx param is always leaf. In the other, it can be anything (of compatible cardinality).
+TODO every edgeType should be a 1 param op.
+TODO put all the edges in the last half of ops, and all the funcs of 2 or more params in first half.
+]
+..
+FIXME do_isItTruncateToCardinalityOrIsItInfloop, and similar for is it truncateToClean or infloop when clean is called on dirty?
+FIXME theres too many kinds of cardinality involved, but I feel that I need the kind that can call doesItHalt to infinite depth, i wrote about hylev[0-1][allInfinityCardinalities] and hylev[1-2][allInfinityCardinalities] etc. Maybe that can be emulated using just the first few hylevs emulating combos of the lower levels together? In any case, I need to get my ideas about cardinality more organized before choosing the final set of opcodes for hyperquasicrystal.
+FIXME do I want the third (pair salt treemap)_or_just_salt param like in wikibinator107?
+	If so, need cfp (or should it be fpc?) op, and getC op, and lazyeval would take 3 params like fpc.
+FIXME how to get around the annoying problem of needing a different equals function etc for each cardinality? you can still upCardinality a single equals function, and that would work, but is there a more automatic way?
+
+
+
+
+
 //Ben F Rayfield offers this software as opensource MIT license.
 //a 7 parameter universal lambda, combinator, and pattern-calculus function,
 //designed to be computed as energyFunction(sparseStochasticMatrix[n]) approximating
