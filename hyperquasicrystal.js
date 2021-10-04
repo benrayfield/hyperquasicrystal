@@ -1,3 +1,121 @@
+New complete list of opcodes 2021-10-4+[
+	...TODO...
+	
+	TODO If 8 params, then call them a b c d w x y z.
+	TODO If 7 params, then call them a b c d x y z. Try to fit the opcodes in 7. If too many, use 8.
+	u means the universal function, the leaf where all l/r paths lead. i means (f u) aka identityFunc.
+	(l u) equals (f u) aka identityFunc. (r u) equals u. ((l u)(r u)) equals u, compatible with "forall j ((l j)(r j)) equals j".
+	
+	o8 is a cache of the binary forst (l/green and r/blue childs) shape to a constant depth.
+	In neuralnet or optical computer or just plain javascript, its expected o8 will be directly stored.
+	For example, in an optical computer, o8 would be some kind of 1 wavelength offset to shift by 1 bit
+	and somehow also put a 0 or 1 where shifted to get a "ones digit place" and to shift out the 7th digit
+	in case it goes too far. nothing should ever have 8 or more params aka "too far" so that would have
+	to be fixed by energy function already tending to fix that kind of thing. Its probably best
+	to not try to remove the high 7th digit so theres just not room to make that error.
+	
+	o8 is an integer from 1 (aka 00000001) to 255 (aka 11111111) and can be any bitstring of 0-7 bits.
+	o8 can be derived from the other operators.
+	(o8 u) is 1.
+	(o8 (u u)) is 2.
+	(o8 (u (u u))) is 3.
+	(o8 (u u u)) is 4.
+	(o8 (u u (u u))) is 5.
+	(o8 (u (u u) u)) is 6.
+	(o8 (u (u u) (u u))) is 7.
+	(o8 (u s l)) is 7.
+	(o8 (u anything_except_u anything_but_u)) is 7. In general, the first 7 params being u vs anything_except_u, each param is a bit in o8. And a high 1 bit.
+	and so on up to 255, by binheap indexing. (o8 j) equals ((o8 (l j))<<1)|((o8 (r j))==1 ? 1 : 0)
+		aka copy o8 from left child, shift up by 1 bit, and put a 1 in ones digit if right child is u, else leave the 0 in ones digit.
+	o8 of 0 (aka 00000000) is not a valid o8 that any lambda call can see, but in neuralnets it might be a useful way to say "dont know o8",
+		and I'm going to write 00000000 beside each opcode below and fill them in later, after I decide exactly which set of opcodes...
+	
+	The universal function takes 8 params, so (u a b c d w x y z)->returnVal or does not halt or caller does not have enough cardinality.
+		All the opcodes are lambdas of 8 params, so they are overlapping, and which of them happens depends on o8.
+	
+	00000000
+	h //λa.λb.λc.λd.λw.λx.λy.λz.(((s i) i) ((s i) i)) //a semantic for red edge to say "halted on y". (s i i (s i i)) is an infinite loop.
+	
+	00000000
+	TODO_op_for_semantic_of_red_edge_goes_here_to_mean_does_not_halt
+	
+	00000000
+	TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer
+	
+	00000000
+	g //λa.λb.λc.λd.λw.λx.λy.λz
+	
+	00000000
+	e //<getCardinality at this part of "the stack". Lambda calls take 3 params: cardinality, func, param. Only func and param exist in halted lambdas. All lambdas are halted, and cardinality only exists inside the l/func and r/param childs of lazyeval* ops.
+	
+	00000000
+	s //λa.λb.λc.λd.λw.λx.λy.λz.((x z)(y z)) //aka the s lambda of https://en.wikipedia.org/wiki/SKI_combinator_calculus
+	
+	00000000
+	t //λa.λb.λc.λd.λw.λx.λy.λz.y //aka the church-true lambda //aka the k lambda of https://en.wikipedia.org/wiki/SKI_combinator_calculus
+	
+	00000000
+	f //λa.λb.λc.λd.λw.λx.λy.λz.z //aka the church-false lambda
+	
+	00000000
+	l //λa.λb.λc.λd.λw.λx.λy.λz.<left/green child of z, where forall j ((l j)(r j)) equals j>
+	
+	00000000
+	r //λa.λb.λc.λd.λw.λx.λy.λz.<right/green child of z, where forall j ((l j)(r j)) equals j>
+	
+	00000000
+	v //λa.λb.λc.λd.λw.λx.λy.λz.<<(r z) equals z> ? t : f> //aka returns t or f depending if z is u. forall j if (r j) equals j then j equals u.
+	
+	00000000
+	p //λa.λb.λc.λd.λw.λx.λy.λz.((z x) y) //aka church-pair lambda. forall j forall k (p j k t) equals j. forall j forall k (p j k f) equals k.
+	
+	00000000 //if first param is anything_except_leaf this happens.
+	n //λa.λb.λc.λd.λw.λx.λy.λz.(a(p(uabcdwxy)z)) //aka a is funcBody, called on a datastruct that includes all the λa.λb.λc.λd.λw.λx.λy.λz params. can recurse a. how most human-readable functions are made.
+	
+	00000000
+	iii //lazyEval identityFunc identityFunc identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	00000000
+	iit //lazyEval identityFunc identityFunc true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	00000000
+	iti //lazyEval identityFunc true identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	00000000
+	itt //lazyEval identityFunc true true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	00000000
+	tii //lazyEval true identityFunc identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	00000000
+	tit //lazyEval true identityFunc true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	00000000
+	tti //lazyEval true true identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	00000000
+	ttt //lazyEval true true true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	
+	
+	todo_ops_for_isclean_wikiAsFuncOfIntegerToIntegerToBeLearnedByExampleAndFitByConstraintsEtcButWhereIscleanWikiCalledOnAnythingEvalsTo(sii(sii))
+	
+	
+	
+	Edgetypes (every node in a hyperquasicrystal has exactly 1 outgoing edge of each type):
+	x--green-->(l x)
+	x--blue-->(r x)
+	x--red--> <if (x u) halts on returnVal then (h returnVal), else todo TODO_op_for_semantic_of_red_edge_goes_here_to_mean_does_not_halt else todo TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer>
+	x--step--> <debugger step, see "step_edge" farther below. This is where all the opcodes are implemented. but there are only 3 steps from anything, for a 3-way-call by iii itt ... ttt etc, and the steps inside those are their 3-way call, and so on. This is something I havent fully worked out, but its similar to callquad datastruct in occamsfuncer, and similar to the planned debugStepOver and debugStepInto ops in wikibinator106 and wikibinator107, and you might need to make more datastructs out of pairs/p etc to navigate "the stack"... I'll figure out these details and make testcases.>
+	
+	TODO start filling in green, blue, red, and step edges in the CONSTANT directedGraph. These will be facts of math, not a place to store mutable data.
+	
+]
+
+
+
+
+
 SOLUTION??? 4 edgetypes: green blue red, and if you try to look across red when you dont have enough cardinality you instead get a specific response saying you dont have enough cardinality. Every edge can be proven, and every wrong edge can be disproven, in the hyperquasicrystal of 3 edge types between an infinite number of nodes. Nodes dont have cardinality. An equals function can be derived that measures equality between any 2 nodes, including itself.
 FIXME??? Everything is 3-way-calls <hylevInteger func param>, but can only see the green and blue edges, and there is some 3way lambda call that generates any specific red edge, that could be done programmatically, and every node can be used with every node, but for every lambda call there is some red edge which is at a higher cardinality (on stack, not in the nodes themselves which only have debuggersteps/lazyevals/etc of that) which if the lower cardinality 3-way-call asked about it, would get the response "caller is not high enough cardinality to get this answer".
 Equals function works on any 2 nodes, regardless of hylev/cardinality/etc. Nodes dont have cardinality. Only 3-way-calls do, and 3-way-calls dont exists except as lazyevals.
