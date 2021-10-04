@@ -98,6 +98,19 @@ New complete list of opcodes 2021-10-4+[
 	truncateToClean
 	FIXME should it just infloop if clean is called on dirty, or should it call truncateToClean?
 	
+	FIXME do I need a red opcode or a doesItHaltAtLowerCardinalityThanCaller opcode or both? red is 1 higher cardinality than doesItHalt, cuz you can only know if something will halt if its at least 1 lower cardinality than you. (g u) is the lowest cardinality. (g (g u)) is the next up. (g (g (g u))) is the next up from that, and so on.
+	Red edge is at 1 higher cardinality than self since it knows if self will halt if self is called on u.
+	00000000
+	red //related to doesItHaltAtLowerCardinalityThanCaller
+	//λa.λb.λc.λd.λw.λx.λy.λz.<If <at cardinality (nextLowerCardinality (getCardinality u))> does (z u) halt, and if so return (h (z u)) else return one of
+	//	TODO_op_for_semantic_of_red_edge_goes_here_to_mean_does_not_halt or
+	//	TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer>
+	
+	//see comments around "red" opcode. I'm unsure if should have red, doesItHaltAtLowerCardinalityThanCaller, or both.
+	//Must be at least 1 of those 2, cuz its the only thing cardinality is useful for in this system.
+	doesItHaltAtLowerCardinalityThanCaller
+	00000000
+	
 	//8 kinds of lazyeval (could have been 1 kind but would be harder for people to read the i's and t's inside them,
 	//and would be and less efficient, without the 8), that choose for 3 childs to be lazyevals vs literals:
 	
