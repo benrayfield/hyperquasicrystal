@@ -75,6 +75,29 @@ New complete list of opcodes 2021-10-4+[
 	n //λa.λb.λc.λd.λw.λx.λy.λz.(a(p(uabcdwxy)z)) //how most human-readable functions are made.
 		//aka a is funcBody, called on datastruct that includes all the λa.λb.λc.λd.λw.λx.λy.λz params. can recurse a.
 	
+	00000000
+	wiki λa.λb.λc.λd.λw.λx.λy.λz.<whatever map of node->node the "wiki" is (all nondeterminism goes here only in dirty lambdas), return (thatFunc z)>
+	
+	00000000
+	isClean λa.λb.λc.λd.λw.λx.λy.λz.<<is z a clean (instead of dirty) lambda> ? t : f>.
+	There are 2 universal functions, cleanLeaf and dirtyLeaf.
+	cleanLeaf can only ever generate clean nodes,
+		and its the only one that can intheory run in manifold based kinds of hardware (in theory, if it can ever do that at all).
+		Dirty can have clean childs andOr dirty childs. But clean can only touch clean. So dirty is a layer above the clean layer,
+		that clean is not affected by since clean is completely deterministic. All nondeterminism goes in dirty lambdas. Dirty is
+		basically a mirror of clean thats nonstrict,
+		allows many computers and people to converge to a shared state of some "wiki" function, or of parts of it (is an infinite
+		size turing-complete space)
+		such as "temp calculations" using a stateful optimization with "salt" to create variations of lambdas so can call them again
+		like if there wasnt enough compute time or memory to get it done the first n times you tried, you can still try again
+		In the clean lambdas, if you give up early on a lambda call, cuz its taking too long or too much memory,
+		then the other lambdas wont know about that giving up. They dont remember that it failed,
+		because its a kind of math where every calculation succeeds, but you can still choose not to explore deeper into any part you dont want to.
+	
+	00000000
+	truncateToClean
+	FIXME should it just infloop if clean is called on dirty, or should it call truncateToClean?
+	
 	//8 kinds of lazyeval (could have been 1 kind but would be harder for people to read the i's and t's inside them,
 	//and would be and less efficient, without the 8), that choose for 3 childs to be lazyevals vs literals:
 	
@@ -90,29 +113,32 @@ New complete list of opcodes 2021-10-4+[
 	That takes more opcode space.
 	Must do one of these things:
 	* change to 9 param universal func, or
-	* reduce to 4 kinds of lazyeval and always use cardinality or (t cardinality) so cardinality can still be literal or lazy, or
+	* reduce to 4 kinds of lazyeval and always use cardinality or (t cardinality) so cardinality can still be literal or lazy (remove tii tit tti ttt), or
 	* reduce to 1 kind of lazyeval and all 3 of them do the i or t.
 	Probably 4 kinds is ok, and you can just reuse a lazyeval that already has a cardinality,
 	since all lambdas are reusable with already having more or less curries. Its mostly the func and param (not cardinality) that varies anyways.
-
-	i or t before the cardinality.
-	Either change to 9 param universal func, cuz 
 	
+	
+	"FIXME push x y z back to w x y, and z is ignored but triggers lazyeval"
 	00000000
 	iii //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return ((y u) (z u))>  //lazyEval identityFunc identityFunc identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 		//red edge would return (h ((y u) (z u))) if halted, or 1 of these 2 (todo finish defining those) ops (might just be 2 constants, or take 1 param each as some kind of "message"?):
 			//TODO_op_for_semantic_of_red_edge_goes_here_to_mean_does_not_halt
 			//TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer
 	
+	"FIXME push x y z back to w x y, and z is ignored but triggers lazyeval"
 	00000000
 	iit //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return ((y u) z)> //lazyEval identityFunc identityFunc true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
+	"FIXME push x y z back to w x y, and z is ignored but triggers lazyeval"
 	00000000
 	iti //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return (y (z u))> //lazyEval identityFunc true identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
+	"FIXME push x y z back to w x y, and z is ignored but triggers lazyeval"
 	00000000
 	itt //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return (y z)> //lazyEval identityFunc true true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
+	/*
 	00000000
 	tii //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality x, return ((y u) (z u))> //lazyEval true identityFunc identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
@@ -124,6 +150,7 @@ New complete list of opcodes 2021-10-4+[
 	
 	00000000
 	ttt //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality x, return (y z)> //lazyEval true true true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	*/
 	
 	
 	
