@@ -1,8 +1,128 @@
 # hyperquasicrystal
 
-(TODO) A 7 parameter universal function defined as an energy function on stochastic pointers in a hypercomputation directedGraph. A universal function approximator. A way of organizing possibly every or nearly every statement in every math book ever written. An actually callable system of lambdas for massively multiplayer gaming and number crunching on GPU and possibly hypercomputation-capable manifold based hardware.
+(TODO) A 7 (UPDATE: 8) parameter universal function defined as an energy function on stochastic pointers in a hypercomputation directedGraph. A universal function approximator. A way of organizing possibly every or nearly every statement in every math book ever written. An actually callable system of lambdas for massively multiplayer gaming and number crunching on GPU and possibly hypercomputation-capable manifold based hardware.
+
 
 TODO (in the forward-computing VM, not the VM that runs slower cuz of doing everything as neuralnets, though they both compute in the exact same directedGraph with the same ids) emulate (a simpler form of) these using the universal combinator: http://github.com/benrayfield/listweb so i have a UI to drag and drop a web of bookmarks and notes about specific combinators and to make a code editor and evaler in the textarea, and https://github.com/benrayfield/hypercubewave as a graphics demo that can be built inside the code editor. When the listweb window (containing a bitstring made of church-pairs of -pairs... of -pairs of church-true or church-false lambdas, for every bit in its pixels or at first just the utf8 bits of the text), causes smooth nonlinear curves to appear on the screen (in a html canvas that views a graph node as pixels)... I mean for that to be a node in the graph, so I could then split the program into a multiverse of possible texteditors and possible programs that could be coded in them, including that the multiverse forks can have pointers to multiple multiverse forks (lambdas) and call the lambdas on eachother, and any lambda coded in this web of text editors across the internet (nodes will have 256 bit secure ids)... anything that 2 people code in these text editors, generates the same node in the graph. For example, 2 people both write a fibonacci function, that happens to have the exact same 2-way forest of lambda calls (there are many possible fibonacci functions if you only count the param/return pairs, but if you also count the internal structure of the lambdas which can be measured by lambdas looking at eachothers internals, then those are not forks to be merged but were already part of the constant directedGraph. If you make a lambda in 2 different code editors on 2 different screens, an equals function can say so. There is no fork-edit-merge cycle. Every tiny change, even a single bit, has its own godel-like-numbering.
+
+In this system, you casn have a lazyEvalOfDoesPEqualNP and a lazyEvalOfAreThereAnInfiniteNumberOfTwinPrimes and can call (ifElse (and lazyEvalOfDoesPEqualNP lazyEvalOfAreThereAnInfiniteNumberOfTwinPrimes) ifTrue... ifFalse...), though there may be a few more lambdas inside of that to handle literal vals vs lazy vals etc. You can of course make an eval(codeString) function for any syntax you like. That doesnt mean it will be able to run the code, but with the help of neuralnet it will be able to try to run it and converge toward more accurate directedGraph edges in the hyperquasicrystal, where each node has 1 outgoing edge of each edgetype, and there might be 4 edgetypes (maybe a few more, still working out details). see hyperquasicrystal.js for theory on 3-way-calls of <cardinality func param> in lazyevals avoids nodes having cardinality but can still do cardinality "on the stack", and the stack only exists in combos of lazyevals, and lazyevals only have l/green/func and r/blue/param childs and do not have cardinality child. so an equals function will be derived (like it has been in wikibinator106, a different universal function without cardinality), where any 2 nodes can be checked for equality and that call is guaranteed to halt, including (equals equals equals)->true.
+
+New complete list of opcodes 2021-10-4+[
+	...TODO...
+	
+	TODO If 8 params, then call them a b c d w x y z.
+	TODO If 7 params, then call them a b c d x y z. Try to fit the opcodes in 7. If too many, use 8.
+	u means the universal function, the leaf where all l/r paths lead. i means (f u) aka identityFunc.
+	(l u) equals (f u) aka identityFunc. (r u) equals u. ((l u)(r u)) equals u, compatible with "forall j ((l j)(r j)) equals j".
+	
+	o8 is a cache of the binary forst (l/green and r/blue childs) shape to a constant depth.
+	In neuralnet or optical computer or just plain javascript, its expected o8 will be directly stored.
+	For example, in an optical computer, o8 would be some kind of 1 wavelength offset to shift by 1 bit
+	and somehow also put a 0 or 1 where shifted to get a "ones digit place" and to shift out the 7th digit
+	in case it goes too far. nothing should ever have 8 or more params aka "too far" so that would have
+	to be fixed by energy function already tending to fix that kind of thing. Its probably best
+	to not try to remove the high 7th digit so theres just not room to make that error.
+	
+	o8 is an integer from 1 (aka 00000001) to 255 (aka 11111111) and can be any bitstring of 0-7 bits.
+	o8 can be derived from the other operators.
+	(o8 u) is 1.
+	(o8 (u u)) is 2.
+	(o8 (u (u u))) is 3.
+	(o8 (u u u)) is 4.
+	(o8 (u u (u u))) is 5.
+	(o8 (u (u u) u)) is 6.
+	(o8 (u (u u) (u u))) is 7.
+	(o8 (u s l)) is 7.
+	(o8 (u anything_except_u anything_but_u)) is 7. In general, the first 7 params being u vs anything_except_u, each param is a bit in o8. And a high 1 bit.
+	and so on up to 255, by binheap indexing. (o8 j) equals ((o8 (l j))<<1)|((o8 (r j))==1 ? 1 : 0)
+		aka copy o8 from left child, shift up by 1 bit, and put a 1 in ones digit if right child is u, else leave the 0 in ones digit.
+	o8 of 0 (aka 00000000) is not a valid o8 that any lambda call can see, but in neuralnets it might be a useful way to say "dont know o8",
+		and I'm going to write 00000000 beside each opcode below and fill them in later, after I decide exactly which set of opcodes...
+	
+	The universal function takes 8 params, so (u a b c d w x y z)->returnVal or does not halt or caller does not have enough cardinality.
+		All the opcodes are lambdas of 8 params, so they are overlapping, and which of them happens depends on o8.
+	
+	00000000
+	h //λa.λb.λc.λd.λw.λx.λy.λz.(((s i) i) ((s i) i)) //a semantic for red edge to say "halted on y". (s i i (s i i)) is an infinite loop.
+	
+	00000000
+	TODO_op_for_semantic_of_red_edge_goes_here_to_mean_does_not_halt
+	
+	00000000
+	TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer
+	
+	00000000
+	g //λa.λb.λc.λd.λw.λx.λy.λz
+	
+	00000000
+	e //<getCardinality at this part of "the stack". Lambda calls take 3 params: cardinality, func, param. Only func and param exist in halted lambdas. All lambdas are halted, and cardinality only exists inside the l/func and r/param childs of lazyeval* ops.
+	
+	00000000
+	s //λa.λb.λc.λd.λw.λx.λy.λz.((x z)(y z)) //aka the s lambda of https://en.wikipedia.org/wiki/SKI_combinator_calculus
+	
+	00000000
+	t //λa.λb.λc.λd.λw.λx.λy.λz.y //aka the church-true lambda //aka the k lambda of https://en.wikipedia.org/wiki/SKI_combinator_calculus
+	
+	00000000
+	f //λa.λb.λc.λd.λw.λx.λy.λz.z //aka the church-false lambda
+	
+	00000000
+	l //λa.λb.λc.λd.λw.λx.λy.λz.<left/green child of z, where forall j ((l j)(r j)) equals j>
+	
+	00000000
+	r //λa.λb.λc.λd.λw.λx.λy.λz.<right/green child of z, where forall j ((l j)(r j)) equals j>
+	
+	00000000
+	v //λa.λb.λc.λd.λw.λx.λy.λz.<<(r z) equals z> ? t : f> //aka returns t or f depending if z is u. forall j if (r j) equals j then j equals u.
+	
+	00000000
+	p //λa.λb.λc.λd.λw.λx.λy.λz.((z x) y) //aka church-pair lambda. forall j forall k (p j k t) equals j. forall j forall k (p j k f) equals k.
+	
+	00000000 //if first param is anything_except_leaf this happens.
+	n //λa.λb.λc.λd.λw.λx.λy.λz.(a(p(uabcdwxy)z)) //aka a is funcBody, called on a datastruct that includes all the λa.λb.λc.λd.λw.λx.λy.λz params. can recurse a. how most human-readable functions are made.
+	
+	00000000
+	iii //lazyEval identityFunc identityFunc identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	00000000
+	iit //lazyEval identityFunc identityFunc true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	00000000
+	iti //lazyEval identityFunc true identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	00000000
+	itt //lazyEval identityFunc true true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	00000000
+	tii //lazyEval true identityFunc identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	00000000
+	tit //lazyEval true identityFunc true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	00000000
+	tti //lazyEval true true identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	00000000
+	ttt //lazyEval true true true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	
+	
+	todo_ops_for_isclean_wikiAsFuncOfIntegerToIntegerToBeLearnedByExampleAndFitByConstraintsEtcButWhereIscleanWikiCalledOnAnythingEvalsTo(sii(sii))
+	
+	
+	
+	Edgetypes (every node in a hyperquasicrystal has exactly 1 outgoing edge of each type):
+	x--green-->(l x)
+	x--blue-->(r x)
+	x--red--> <if (x u) halts on returnVal then (h returnVal), else todo TODO_op_for_semantic_of_red_edge_goes_here_to_mean_does_not_halt else todo TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer>
+	x--step--> <debugger step, see "step_edge" farther below. This is where all the opcodes are implemented. but there are only 3 steps from anything, for a 3-way-call by iii itt ... ttt etc, and the steps inside those are their 3-way call, and so on. This is something I havent fully worked out, but its similar to callquad datastruct in occamsfuncer, and similar to the planned debugStepOver and debugStepInto ops in wikibinator106 and wikibinator107, and you might need to make more datastructs out of pairs/p etc to navigate "the stack"... I'll figure out these details and make testcases.>
+	
+	TODO start filling in green, blue, red, and step edges in the CONSTANT directedGraph. These will be facts of math, not a place to store mutable data.
+	
+]
+
+    
+    
 
 HYPERCOMPUTATION BASICS:
 From each node there are 4 edges: green and blue are the 2 lambda call childs. red edge is 1 hypercomputation level up as it points at basically the return value of the lazy-eval of a lambda call (leaf returnVal) or points at "does not halt" (leaf), both of which are also lambdas/nodes. Theres also a debuggerStep edge thats the counterpart of the red edge, which does a tiny amount of work by you finding out where it goes (in the constant graph shape) and together many steps tell the red edge what to return or be nonhalting. Halting oracles do not exist, so some parts can only be approximated or may never be known. That covers hypercomputation levels 0-1, which you can think of as many icons on screen each with 4 colored arrows to 4 other icons (or statistically a blur of arrows), and at this level you can do anything that a normal computer can. Past that, it gets much harder to approximate, and more things we may not ever know about it, huge holes we wont be able to fill in the graph edges, but theres still some correct graph edges even if we dont know what it is. Hypercomputation levels 1-2 are the same as levels 0-1 except theres opcodes to go along the graph edge from any lower level node, so if it goes along a red edge it can ask does a certain lazy lambda call halt or not, then continue an if/else based on the answer. Hypercomputation levels 2-3 can do the same for all lower levels including using combos of multiple lower levels together (still some things to work out, future research). Theres edge to go to a same node but at a lower cardinality. Any 2 lambdas can be checked for equality in an average of constant time but a worst case of having to lazy-eval all their 256 bit ids, or if computed as neuralnet it doesnt need ids at all cuz there is only 1 automorphism (the least possible) of this graph aka you can always go down the blue and green edges until finding the leaf. All paths lead to a single node that way, and its the only node that has a blue edge to itself.
