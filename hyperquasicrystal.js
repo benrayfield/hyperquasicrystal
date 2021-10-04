@@ -1,3 +1,5 @@
+This is a constant directedGraph with 4 (might be a few more, todo) edge types. Its a specific math structure.
+
 New complete list of opcodes 2021-10-4+[
 	...TODO...
 	
@@ -43,7 +45,7 @@ New complete list of opcodes 2021-10-4+[
 	TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer
 	
 	00000000
-	g //λa.λb.λc.λd.λw.λx.λy.λz
+	g //λa.λb.λc.λd.λw.λx.λy.λz.(((s i) i) ((s i) i)) //linkedlist of cardinality as unary number, used with (tii (g (g (g (g u)))) aFunc aParam) or ttt etc.
 	
 	00000000
 	e //<getCardinality at this part of "the stack". Lambda calls take 3 params: cardinality, func, param. Only func and param exist in halted lambdas. All lambdas are halted, and cardinality only exists inside the l/func and r/param childs of lazyeval* ops.
@@ -61,7 +63,7 @@ New complete list of opcodes 2021-10-4+[
 	l //λa.λb.λc.λd.λw.λx.λy.λz.<left/green child of z, where forall j ((l j)(r j)) equals j>
 	
 	00000000
-	r //λa.λb.λc.λd.λw.λx.λy.λz.<right/green child of z, where forall j ((l j)(r j)) equals j>
+	r //λa.λb.λc.λd.λw.λx.λy.λz.<right/blue child of z, where forall j ((l j)(r j)) equals j>
 	
 	00000000
 	v //λa.λb.λc.λd.λw.λx.λy.λz.<<(r z) equals z> ? t : f> //aka returns t or f depending if z is u. forall j if (r j) equals j then j equals u.
@@ -70,31 +72,45 @@ New complete list of opcodes 2021-10-4+[
 	p //λa.λb.λc.λd.λw.λx.λy.λz.((z x) y) //aka church-pair lambda. forall j forall k (p j k t) equals j. forall j forall k (p j k f) equals k.
 	
 	00000000 //if first param is anything_except_leaf this happens.
-	n //λa.λb.λc.λd.λw.λx.λy.λz.(a(p(uabcdwxy)z)) //aka a is funcBody, called on a datastruct that includes all the λa.λb.λc.λd.λw.λx.λy.λz params. can recurse a. how most human-readable functions are made.
+	n //λa.λb.λc.λd.λw.λx.λy.λz.(a(p(uabcdwxy)z)) //how most human-readable functions are made.
+		//aka a is funcBody, called on datastruct that includes all the λa.λb.λc.λd.λw.λx.λy.λz params. can recurse a.
+	
+	//8 kinds of lazyeval (could have been 1 kind but would be harder for people to read the i's and t's inside them,
+	//and would be and less efficient, without the 8), that choose for 3 childs to be lazyevals vs literals:
+	
+	//WHY THE names iii iit iti itt tii tit tti ttt:
+	//Example: iti does λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return (y (z u))>
+	//aka <with cardinality (i x u), return ((t y u) (i z u))>. aka <with cardinality (i x u), return (t y u (i z u))>.
+	//Use "i" with lazyeval inside lazyeval. Use "t" to quote a literal lambda inside a lazyeval.
+	//Each lazyeval is a 3-way call of cardinality, func, and param,
+	//where for each of those 3 it can be another lazyeval (call on u to trigger lazyeval) or a literal value.
 	
 	00000000
-	iii //lazyEval identityFunc identityFunc identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	iii //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return ((y u) (z u))>  //lazyEval identityFunc identityFunc identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+		//red edge would return (h (y z)) if halted, or 1 of these 2 (todo finish defining those) ops (might just be 2 constants, or take 1 param each as some kind of "message"?):
+			//TODO_op_for_semantic_of_red_edge_goes_here_to_mean_does_not_halt
+			//TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer
 	
 	00000000
-	iit //lazyEval identityFunc identityFunc true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	iit //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return ((y u) z)> //lazyEval identityFunc identityFunc true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
 	00000000
-	iti //lazyEval identityFunc true identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	iti //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return (y (z u))> //lazyEval identityFunc true identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
 	00000000
-	itt //lazyEval identityFunc true true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	itt //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return (y z)> //lazyEval identityFunc true true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
 	00000000
-	tii //lazyEval true identityFunc identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	tii //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality x, return ((y u) (z u))> //lazyEval true identityFunc identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
 	00000000
-	tit //lazyEval true identityFunc true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	tit //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality x, return ((y u) z)> //lazyEval true identityFunc true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
 	00000000
-	tti //lazyEval true true identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	tti //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality x, return (y (z u))> //lazyEval true true identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
 	00000000
-	ttt //lazyEval true true true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	ttt //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality x, return (y z)> //lazyEval true true true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
 	
 	
