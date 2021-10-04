@@ -85,9 +85,22 @@ New complete list of opcodes 2021-10-4+[
 	//Each lazyeval is a 3-way call of cardinality, func, and param,
 	//where for each of those 3 it can be another lazyeval (call on u to trigger lazyeval) or a literal value.
 	
+	
+	FIXME push all these x y z back to w x y, and ignore z as its how lazyeval is triggered.
+	That takes more opcode space.
+	Must do one of these things:
+	* change to 9 param universal func, or
+	* reduce to 4 kinds of lazyeval and always use cardinality or (t cardinality) so cardinality can still be literal or lazy, or
+	* reduce to 1 kind of lazyeval and all 3 of them do the i or t.
+	Probably 4 kinds is ok, and you can just reuse a lazyeval that already has a cardinality,
+	since all lambdas are reusable with already having more or less curries. Its mostly the func and param (not cardinality) that varies anyways.
+
+	i or t before the cardinality.
+	Either change to 9 param universal func, cuz 
+	
 	00000000
 	iii //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return ((y u) (z u))>  //lazyEval identityFunc identityFunc identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
-		//red edge would return (h (y z)) if halted, or 1 of these 2 (todo finish defining those) ops (might just be 2 constants, or take 1 param each as some kind of "message"?):
+		//red edge would return (h ((y u) (z u))) if halted, or 1 of these 2 (todo finish defining those) ops (might just be 2 constants, or take 1 param each as some kind of "message"?):
 			//TODO_op_for_semantic_of_red_edge_goes_here_to_mean_does_not_halt
 			//TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer
 	
