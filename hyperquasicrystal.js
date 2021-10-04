@@ -99,7 +99,12 @@ New complete list of opcodes 2021-10-4+[
 	FIXME should it just infloop if clean is called on dirty, or should it call truncateToClean?
 	
 	FIXME do I need a red opcode or a doesItHaltAtLowerCardinalityThanCaller opcode or both? red is 1 higher cardinality than doesItHalt, cuz you can only know if something will halt if its at least 1 lower cardinality than you. (g u) is the lowest cardinality. (g (g u)) is the next up. (g (g (g u))) is the next up from that, and so on.
-	Red edge is at 1 higher cardinality than self since it knows if self will halt if self is called on u.
+	Red edge is at 1 higher cardinality than self since it knows if self will halt if self is called on u
+	(TODO red edge is mostly useful from lazyeval/iii/itt/iit/iti objects, so its not exactly "if self will halt".
+	Its if will halt at a cardinality, and the lazyeval has 3 things in it the cardinality, func, and param, and the red edge is about that 3-way-call,
+	and red edge is never to TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer
+	but red edge can be to (h returnVal) or to TODO_op_for_semantic_of_red_edge_goes_here_to_mean_does_not_halt.
+	doesItHaltAtLowerCardinalityThanCaller deterministicly returns TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer in some cases.
 	00000000
 	red //related to doesItHaltAtLowerCardinalityThanCaller
 	//λa.λb.λc.λd.λw.λx.λy.λz.<If <at cardinality (nextLowerCardinality (getCardinality u))> does (z u) halt, and if so return (h (z u)) else return one of
