@@ -12,7 +12,8 @@ A "hypercomputer" is an imaginary artifact required to answer some crisp questio
 UNQUOTE.
 I would not call that a halting-oracle since that implies it can be called at same level/cardinality which can be disproven by creating a lambda that calls a halting-oracle on the lambda recursively to ask what the lambda would do in that case that is happening right now, then the lambda by design does the opposite, disproving-by-contradiction halting-oracles. I instead call it doesItHaltAtLowerCardinalityThanCaller.
 
-New complete list of opcodes 2021-10-4+[
+	
+New complete list of opcodes 2021-10-7+[
 	...TODO...
 	
 	TODO If 8 params, then call them a b c d w x y z.
@@ -39,7 +40,8 @@ New complete list of opcodes 2021-10-4+[
 	(o8 (u (u u) (u u))) is 7.
 	(o8 (u s l)) is 7.
 	(o8 (u anything_except_u anything_but_u)) is 7. In general, the first 7 params being u vs anything_except_u, each param is a bit in o8. And a high 1 bit.
-	and so on up to 255, by binheap indexing. (o8 j) equals ((o8 (l j))<<1)|((o8 (r j))==1 ? 1 : 0)
+	and so on up to 255, by binheap indexing. (o8 j) equals ((o8 (l j))<<1)|((o8 (r j))==1 ? 1 : 0) except o8 of u is 1.
+	u is identified by its the only node j where (r j) equals j, aka (r u) equals u. TODO update "((o8 (l j))<<1)|((o8 (r j))==1 ? 1 : 0)" to include that.
 		aka copy o8 from left child, shift up by 1 bit, and put a 1 in ones digit if right child is u, else leave the 0 in ones digit.
 	o8 of 0 (aka 00000000) is not a valid o8 that any lambda call can see, but in neuralnets it might be a useful way to say "dont know o8",
 		and I'm going to write 00000000 beside each opcode below and fill them in later, after I decide exactly which set of opcodes...
@@ -60,7 +62,12 @@ New complete list of opcodes 2021-10-4+[
 	g //λa.λb.λc.λd.λw.λx.λy.λz.(((s i) i) ((s i) i)) //linkedlist of cardinality as unary number, used with (tii (g (g (g (g u)))) aFunc aParam) or ttt etc.
 	
 	00000000
-	e //<getCardinality at this part of "the stack". Lambda calls take 3 params: cardinality, func, param. Only func and param exist in halted lambdas. All lambdas are halted, and cardinality only exists inside the l/func and r/param childs of lazyeval* ops.
+	e //<getCardinality at this part of "the stack". Lambda calls take 3 params: cardinality, func, param.
+	//Only func and param exist in halted lambdas.
+	//All lambdas are halted, and cardinality only exists inside the l/func and r/param childs of lazyeval* ops.
+	//A lazyeval is a lambda that waits on 1 more param to trigger lazyeval,
+	//but that param never actually comes as the compute steps are instead done as more lazyevals.
+	//Thats how its a constant directedGraph.
 	
 	00000000
 	s //λa.λb.λc.λd.λw.λx.λy.λz.((x z)(y z)) //aka the s lambda of https://en.wikipedia.org/wiki/SKI_combinator_calculus
@@ -75,7 +82,7 @@ New complete list of opcodes 2021-10-4+[
 	l //λa.λb.λc.λd.λw.λx.λy.λz.<left/green child of z, where forall j ((l j)(r j)) equals j>
 	
 	00000000
-	r //λa.λb.λc.λd.λw.λx.λy.λz.<right/green child of z, where forall j ((l j)(r j)) equals j>
+	r //λa.λb.λc.λd.λw.λx.λy.λz.<right/blue child of z, where forall j ((l j)(r j)) equals j>
 	
 	00000000
 	v //λa.λb.λc.λd.λw.λx.λy.λz.<<(r z) equals z> ? t : f> //aka returns t or f depending if z is u. forall j if (r j) equals j then j equals u.
@@ -84,31 +91,103 @@ New complete list of opcodes 2021-10-4+[
 	p //λa.λb.λc.λd.λw.λx.λy.λz.((z x) y) //aka church-pair lambda. forall j forall k (p j k t) equals j. forall j forall k (p j k f) equals k.
 	
 	00000000 //if first param is anything_except_leaf this happens.
-	n //λa.λb.λc.λd.λw.λx.λy.λz.(a(p(uabcdwxy)z)) //aka a is funcBody, called on a datastruct that includes all the λa.λb.λc.λd.λw.λx.λy.λz params. can recurse a. how most human-readable functions are made.
+	n //λa.λb.λc.λd.λw.λx.λy.λz.(a(p(uabcdwxy)z)) //how most human-readable functions are made.
+		//aka a is funcBody, called on datastruct that includes all the λa.λb.λc.λd.λw.λx.λy.λz params. can recurse a.
 	
 	00000000
-	iii //lazyEval identityFunc identityFunc identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	wiki λa.λb.λc.λd.λw.λx.λy.λz.<whatever map of node->node the "wiki" is (all nondeterminism goes here only in dirty lambdas), return (thatFunc z)>
 	
 	00000000
-	iit //lazyEval identityFunc identityFunc true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	isClean λa.λb.λc.λd.λw.λx.λy.λz.<<is z a clean (instead of dirty) lambda> ? t : f>.
+	There are 2 universal functions, cleanLeaf and dirtyLeaf.
+	cleanLeaf can only ever generate clean nodes,
+		and its the only one that can intheory run in manifold based kinds of hardware (in theory, if it can ever do that at all).
+		Dirty can have clean childs andOr dirty childs. But clean can only touch clean. So dirty is a layer above the clean layer,
+		that clean is not affected by since clean is completely deterministic. All nondeterminism goes in dirty lambdas. Dirty is
+		basically a mirror of clean thats nonstrict,
+		allows many computers and people to converge to a shared state of some "wiki" function, or of parts of it (is an infinite
+		size turing-complete space)
+		such as "temp calculations" using a stateful optimization with "salt" to create variations of lambdas so can call them again
+		like if there wasnt enough compute time or memory to get it done the first n times you tried, you can still try again
+		In the clean lambdas, if you give up early on a lambda call, cuz its taking too long or too much memory,
+		then the other lambdas wont know about that giving up. They dont remember that it failed,
+		because its a kind of math where every calculation succeeds, but you can still choose not to explore deeper into any part you dont want to.
 	
 	00000000
-	iti //lazyEval identityFunc true identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	truncateToClean
+	FIXME should it just infloop if clean is called on dirty, or should it call truncateToClean?
+	
+	FIXME do I need a red opcode or a doesItHaltAtLowerCardinalityThanCaller opcode or both? red is 1 higher cardinality than doesItHalt, cuz you can only know if something will halt if its at least 1 lower cardinality than you. (g u) is the lowest cardinality. (g (g u)) is the next up. (g (g (g u))) is the next up from that, and so on.
+	Red edge is at 1 higher cardinality than self since it knows if self will halt if self is called on u
+	(TODO red edge is mostly useful from lazyeval/iii/itt/iit/iti objects, so its not exactly "if self will halt".
+	Its if will halt at a cardinality, and the lazyeval has 3 things in it the cardinality, func, and param, and the red edge is about that 3-way-call,
+	and red edge is never to TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer
+	but red edge can be to (h returnVal) or to TODO_op_for_semantic_of_red_edge_goes_here_to_mean_does_not_halt.
+	doesItHaltAtLowerCardinalityThanCaller deterministicly returns TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer in some cases.
+	00000000
+	red //related to doesItHaltAtLowerCardinalityThanCaller
+	//λa.λb.λc.λd.λw.λx.λy.λz.<If <at cardinality (nextLowerCardinality (getCardinality u))> does (z u) halt, and if so return (h (z u)) else return one of
+	//	TODO_op_for_semantic_of_red_edge_goes_here_to_mean_does_not_halt or
+	//	TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer>
+	
+	//see comments around "red" opcode. I'm unsure if should have red, doesItHaltAtLowerCardinalityThanCaller, or both.
+	//Must be at least 1 of those 2, cuz its the only thing cardinality is useful for in this system.
+	doesItHaltAtLowerCardinalityThanCaller
+	00000000
+	
+	//8 kinds of lazyeval (could have been 1 kind but would be harder for people to read the i's and t's inside them,
+	//and would be and less efficient, without the 8), that choose for 3 childs to be lazyevals vs literals:
+	
+	//WHY THE names iii iit iti itt tii tit tti ttt:
+	//Example: iti does λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return (y (z u))>
+	//aka <with cardinality (i x u), return ((t y u) (i z u))>. aka <with cardinality (i x u), return (t y u (i z u))>.
+	//Use "i" with lazyeval inside lazyeval. Use "t" to quote a literal lambda inside a lazyeval.
+	//Each lazyeval is a 3-way call of cardinality, func, and param,
+	//where for each of those 3 it can be another lazyeval (call on u to trigger lazyeval) or a literal value.
+	
+	
+	FIXME push all these x y z back to w x y, and ignore z as its how lazyeval is triggered.
+	That takes more opcode space.
+	Must do one of these things:
+	* change to 9 param universal func, or
+	* reduce to 4 kinds of lazyeval and always use cardinality or (t cardinality) so cardinality can still be literal or lazy (remove tii tit tti ttt), or
+	* reduce to 1 kind of lazyeval and all 3 of them do the i or t.
+	Probably 4 kinds is ok, and you can just reuse a lazyeval that already has a cardinality,
+	since all lambdas are reusable with already having more or less curries. Its mostly the func and param (not cardinality) that varies anyways.
+	
+	
+	"FIXME push x y z back to w x y, and z is ignored but triggers lazyeval"
+	00000000
+	iii //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return ((y u) (z u))>  //lazyEval identityFunc identityFunc identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+		//red edge would return (h ((y u) (z u))) if halted, or 1 of these 2 (todo finish defining those) ops (might just be 2 constants, or take 1 param each as some kind of "message"?):
+			//TODO_op_for_semantic_of_red_edge_goes_here_to_mean_does_not_halt
+			//TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer
+	
+	"FIXME push x y z back to w x y, and z is ignored but triggers lazyeval"
+	00000000
+	iit //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return ((y u) z)> //lazyEval identityFunc identityFunc true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	"FIXME push x y z back to w x y, and z is ignored but triggers lazyeval"
+	00000000
+	iti //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return (y (z u))> //lazyEval identityFunc true identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	"FIXME push x y z back to w x y, and z is ignored but triggers lazyeval"
+	00000000
+	itt //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return (y z)> //lazyEval identityFunc true true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	
+	/*
+	00000000
+	tii //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality x, return ((y u) (z u))> //lazyEval true identityFunc identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
 	00000000
-	itt //lazyEval identityFunc true true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	tit //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality x, return ((y u) z)> //lazyEval true identityFunc true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
 	00000000
-	tii //lazyEval true identityFunc identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	tti //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality x, return (y (z u))> //lazyEval true true identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
 	00000000
-	tit //lazyEval true identityFunc true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
-	
-	00000000
-	tti //lazyEval true true identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
-	
-	00000000
-	ttt //lazyEval true true true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	ttt //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality x, return (y z)> //lazyEval true true true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
+	*/
 	
 	
 	
@@ -125,6 +204,7 @@ New complete list of opcodes 2021-10-4+[
 	TODO start filling in green, blue, red, and step edges in the CONSTANT directedGraph. These will be facts of math, not a place to store mutable data.
 	
 ]
+
 
     
     
