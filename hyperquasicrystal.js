@@ -27,7 +27,8 @@ New complete list of opcodes 2021-10-4+[
 	(o8 (u (u u) (u u))) is 7.
 	(o8 (u s l)) is 7.
 	(o8 (u anything_except_u anything_but_u)) is 7. In general, the first 7 params being u vs anything_except_u, each param is a bit in o8. And a high 1 bit.
-	and so on up to 255, by binheap indexing. (o8 j) equals ((o8 (l j))<<1)|((o8 (r j))==1 ? 1 : 0)
+	and so on up to 255, by binheap indexing. (o8 j) equals ((o8 (l j))<<1)|((o8 (r j))==1 ? 1 : 0) except o8 of u is 1.
+	u is identified by its the only node j where (r j) equals j, aka (r u) equals u. TODO update "((o8 (l j))<<1)|((o8 (r j))==1 ? 1 : 0)" to include that.
 		aka copy o8 from left child, shift up by 1 bit, and put a 1 in ones digit if right child is u, else leave the 0 in ones digit.
 	o8 of 0 (aka 00000000) is not a valid o8 that any lambda call can see, but in neuralnets it might be a useful way to say "dont know o8",
 		and I'm going to write 00000000 beside each opcode below and fill them in later, after I decide exactly which set of opcodes...
@@ -48,7 +49,12 @@ New complete list of opcodes 2021-10-4+[
 	g //λa.λb.λc.λd.λw.λx.λy.λz.(((s i) i) ((s i) i)) //linkedlist of cardinality as unary number, used with (tii (g (g (g (g u)))) aFunc aParam) or ttt etc.
 	
 	00000000
-	e //<getCardinality at this part of "the stack". Lambda calls take 3 params: cardinality, func, param. Only func and param exist in halted lambdas. All lambdas are halted, and cardinality only exists inside the l/func and r/param childs of lazyeval* ops.
+	e //<getCardinality at this part of "the stack". Lambda calls take 3 params: cardinality, func, param.
+	//Only func and param exist in halted lambdas.
+	//All lambdas are halted, and cardinality only exists inside the l/func and r/param childs of lazyeval* ops.
+	//A lazyeval is a lambda that waits on 1 more param to trigger lazyeval,
+	//but that param never actually comes as the compute steps are instead done as more lazyevals.
+	//Thats how its a constant directedGraph.
 	
 	00000000
 	s //λa.λb.λc.λd.λw.λx.λy.λz.((x z)(y z)) //aka the s lambda of https://en.wikipedia.org/wiki/SKI_combinator_calculus
