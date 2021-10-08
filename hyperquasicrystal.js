@@ -1,6 +1,63 @@
-This is a constant directedGraph with 4 (might be a few more, todo) edge types. Its a specific math structure.
+There is incomplete javascript code farther below.
 
-New complete list of opcodes 2021-10-4+[
+The tryRed op fixes the multiple cardinalities at once problem.
+..
+FIXME Still need to choose between the (g (g (g u))) model of cardinality
+and the more flexible (g (g (infiniteCardinality (infiniteCardinality u)))) etc,
+where infiniteCardinality is a cardinality above all integer number of g's cardinality
+which means it can cross all those red edges,
+and at infiniteCardinality you can write the statement
+"at all integer cardinalities, forall x (equals (l x (r x)) x)",
+which is a statement I actually want to write in the system.
+But it has the same problem of it cant fully describe itself.
+No cardinality level I know of can.
+Maybe it should be a linkedlist or tree of cardinality,
+something that would allow me to refer to an infinite depth of
+(infiniteCardinality (infiniteCardinality (infiniteCardinality u))) etc,
+and an infinite depth of those, and so on.
+Any cardinality the system has a node for,
+I want it to be able to define an infinite cardinality above that one.
+Somewhere in there is the specific cardinality mr godel was working at,
+and I want a node for every statement godel ever wrote and a node that
+if evaled (its of course a lazyeval) disproves the consistency of his math axioms.
+I want a node for the nth bit in a 3body simulation computed continuously,
+and similarly any differential equation such as chuasCircuit
+or 3body or a circuit of capacitors inductors resistors etc,
+though I'm skeptical I'll be able to define that exactly since I only know how to
+bound it in an ever smaller possible n dimensional range
+(of where the x y x y x y positions and velocities could be at time t)
+and the problem is that at rare places
+those numbers have an infinite number of 0s
+so it would require bounding it in an infinitely small possible range
+to get a finite nth digit.
+The nth digit of pi or e can be done with just normal lambdas,
+but differential equations computed exactly and continuously for t time,
+thats something much harder and I'm not sure if the recursions of infinite cardinality I mentioned are enough.
+Some things maybe the system doesnt need to be able to do, they're just too hard.
+So TODO choose a data structure for (getCardinality u) to return,
+then get back to coding the javascript.
+
+/* This software is opensource MIT licensed by Ben F Rayfield, and of course
+nobody owns the facts of math, even if theres a godel-like-number for such a fact.
+This is a constant directedGraph with 4 (might be a few more, todo)
+edge types. Its a specific math structure. This is also an incomplete
+javascript implementation, and separate incomplete neuralnet
+implementation, of a subset of that directedGraph, a subset enough
+to call the universal function on itself to create any lambda
+function (will work in both implementations), but outside that
+subset, the space of hypercomputation can only be estimated and in
+many parts will be too hard to estimate, but I do plan to manually
+fill in parts of it for some common math statements involving combos
+of Exists and ForAll of lambdas, especially the 2 examples of
+"does P equal NP or not" and
+"are there an infinite number of twin primes" since those will be
+2 specific hyperlambdas you can derive from the universal function.
+You will be able to derive them without evaling them (as lazyeval),
+so the nodes are just "math questions", and the hypercomputation
+part only exists when trying to eval/answer them.
+*/
+
+New complete list of opcodes 2021-10-8+[
 	...TODO...
 	
 	TODO If 8 params, then call them a b c d w x y z.
@@ -35,6 +92,27 @@ New complete list of opcodes 2021-10-4+[
 	
 	The universal function takes 8 params, so (u a b c d w x y z)->returnVal or does not halt or caller does not have enough cardinality.
 		All the opcodes are lambdas of 8 params, so they are overlapping, and which of them happens depends on o8.
+		
+	00000000
+	l //λa.λb.λc.λd.λw.λx.λy.λz.<left/green child of z, where forall j ((l j)(r j)) equals j>
+	
+	00000000
+	r //λa.λb.λc.λd.λw.λx.λy.λz.<right/blue child of z, where forall j ((l j)(r j)) equals j>
+	
+	00000000
+	tryRed //λa.λb.λc.λd.λw.λx.λy.λz.<If (getCardinality u) is enough, (red z),
+		//else TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer>
+		//Forall z (red z) returns (h some_return_val) or TODO_op_for_semantic_of_red_edge_goes_here_to_mean_does_not_halt.
+		//(getCardinality u) returns the cardinality param of the "current" 3-way-call,
+		//but since everything is done as lazyEvals, and never actually "is evaling" anything,
+		//instead only growing the directedGraph that is the hyperquasicrystal,
+		//there technically is no "current" 3-way-call, only lazy-evals of them.
+		//Some of those lazy-evals would be of (tryRed z) for some z.
+		//If z is another lazy-eval, then the current cardinality is checked against
+		//the requested cardinality of z (its the first 4 params of a lazy-eval such)
+		//to choose between giving where the red edge points at
+		//vs saying theres not enuf cardinality.
+	
 	
 	00000000
 	h //λa.λb.λc.λd.λw.λx.λy.λz.(((s i) i) ((s i) i)) //a semantic for red edge to say "halted on y". (s i i (s i i)) is an infinite loop.
@@ -64,12 +142,6 @@ New complete list of opcodes 2021-10-4+[
 	
 	00000000
 	f //λa.λb.λc.λd.λw.λx.λy.λz.z //aka the church-false lambda
-	
-	00000000
-	l //λa.λb.λc.λd.λw.λx.λy.λz.<left/green child of z, where forall j ((l j)(r j)) equals j>
-	
-	00000000
-	r //λa.λb.λc.λd.λw.λx.λy.λz.<right/blue child of z, where forall j ((l j)(r j)) equals j>
 	
 	00000000
 	v //λa.λb.λc.λd.λw.λx.λy.λz.<<(r z) equals z> ? t : f> //aka returns t or f depending if z is u. forall j if (r j) equals j then j equals u.
