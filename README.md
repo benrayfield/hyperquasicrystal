@@ -238,7 +238,10 @@ The opcodes are defined in https://github.com/benrayfield/hyperquasicrystal/blob
 [
 	TODO maybe after that...
 
-	I suspect theres virtual-positrons, aka a curved pbrane sticking in the antimatter direction, somewhere between the electrons, and that it might be a way to store antimatter more efficiently than the usual vacuum magnetic bottle way, like a tetraquark can have both matter and antimatter parts touching eachother but it doesnt explode as expected.
+	I suspect theres virtual-positrons, aka a curved pbrane sticking in the antimatter direction,
+	somewhere between the electrons, and that it might be a way to store antimatter more efficiently (a passive component / unpowered)
+	than the usual vacuum magnetic bottle way, like a tetraquark can have both matter and antimatter
+	parts touching eachother but it doesnt explode as expected.
 
 	https://en.wikipedia.org/wiki/Wigner_crystal
 
