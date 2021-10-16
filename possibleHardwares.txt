@@ -1,0 +1,27 @@
+The lambdas will run in any software, such as javascript, java, python, but could also be optimized in some existing or new specialized hardware.
+What possible kinds of hardware might be efficient?...
+
+Possibly existing cellular automata chips, manifold based hardware, GPUs, cellprocessors, etc, or simply javascript in a browser but much slower.
+
+All liquid quasicrystal chips would run on a very low energy 3d clock wave or vibration.
+
+* The first chip should be just a proof of concept, not do much useful.
+2d liquid quasicrystal which forms into https://en.wikipedia.org/wiki/Quasicrystal#/media/File:Penrose_Tiling_(Rhombi).svg
+
+* The second chip should be just a proof of concept, not do much useful.
+3d liquid quasicrystal which forms into https://en.wikipedia.org/wiki/Langton%27s_ant#/media/File:LangtonsAnt.png
+where each cell has 5 bits of state for is it white/black and is there a langtonsAnt in each of 4 directions.
+This is unitary and quickly reversible. Langtons Ant is said to be turing complete but I'm not sure if it is. Its at least interestingly chaotic.
+
+* The third 3d liquid quasicrystal chip should do matrix multiply faster than most GPUs, and is reversible though not solvable in reverse,
+using this way of swapping 2 bits for 1 bit: https://sourceforge.net/projects/visualintfactor/
+
+* The fourth 3d liquid quasicrystal chip should take some representation of an energy function that describes a sparse graph (edges between nodes),
+and carry pointers between graph nodes along 3d paths between them. These graph shapes are of just 1 constant graph shape,
+that does not change from earlier cycles to later cycles, but instead near-statelessly navigates a constant infinite size math structure
+such as the space of all possible lambda functions being represented as such a graph.
+Some kind of vibration or way of the 3d path pointers, not blobbing into eachother, but still being able to cross eachother without tangling,
+would need to be figured out. Garbage collection in a constant infinite size math structure is simply to delete any graph edge or node
+at any time because it can be deterministicly derived again.
+
+When I say liquid quasicrystal, I mean an actual liquid, that could be poured from a bottle.
