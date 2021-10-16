@@ -5,7 +5,8 @@ Possibly existing cellular automata chips, manifold based hardware, GPUs, cellpr
 
 All liquid quasicrystal chips would run on a very low energy 3d clock wave or vibration.
 
-* The first chip should be just a proof of concept, not do much useful.
+* The first chip should be just a proof of concept, not do much useful (but smaller variants of it might be useful as a RAM or flash memory stick,
+todo explore later, this one is just to get a feel for how liquid quasicrystals work).
 2d liquid quasicrystal which forms into https://en.wikipedia.org/wiki/Quasicrystal#/media/File:Penrose_Tiling_(Rhombi).svg
 
 * The second chip should be just a proof of concept, not do much useful.
