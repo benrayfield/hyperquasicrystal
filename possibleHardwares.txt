@@ -25,4 +25,6 @@ Some kind of vibration or way of the 3d path pointers, not blobbing into eachoth
 would need to be figured out. Garbage collection in a constant infinite size math structure is simply to delete any graph edge or node
 at any time because it can be deterministicly derived again.
 
+* After combining various of those kinds of liquid quasicrystals, explore possible liquid quasicrystal physics theories of what the planck scale is made of. Probaby we are a 3d quasicrystal, and microscopic wormholes aka quantum foam are similar to pointers, or something like that.
+
 When I say liquid quasicrystal, I mean an actual liquid, that could be poured from a bottle.
