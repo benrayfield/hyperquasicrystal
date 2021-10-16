@@ -1,5 +1,32 @@
 There is incomplete javascript code farther below.
 
+TODO is it ok to not lazyeval cx or cardinality but do lazyeval func and param?
+
+TODO the lazyeval ops will use this order: cx cardinality func param, cuz if !isCallsAre4ParamsVs3 then its just the last 3,
+and dont want to interfere with the optimization of those 3 in the simplest case of clean, no ax constraints, and 3-way-calls,
+which is the only one that specialized hardware might eventually be built for. it will be just javascript etc til then.
+But it might be near equally fast as [cardinality cx func param] for that? and that one might be more intuitive for people.
+
+TODO should 
+
+
+TODO how do these 8 kinds of lambdas (powerset of isclean, isAllowAxa, and isCallsAre4ParamsVs3) interact?
+truncateToClean? truncateToCardinality? TruncateToCantAxConstraint?
+For each, you can go down, but you cant go up. similar to cardinality except thats more than a bit.
+Should these go in cardinality?
+SHOULD THESE GO "ON THE STACK"? Clean has to be part of the node, but isAllowAxa, and isCallsAre4ParamsVs3 could go on "stack".
+Maybe clean and !isCallsAre4ParamsVs3 should go together?
+
+from below QUOTE
+FIXME withCx probably has to go in the lazyeval ops, which makes them too big for a universal func of 8 params???
+	unless put cx in with cardinality since both of those are things that only exist on "the stack".
+	If limit cx to never be u, and cardinality is never u (cuz lowest is (g u)???),
+	then could get extra opcode space by putting the things that cant be u in the earlier params,
+	since o8 is the 0-7 bits of are the first 7 params u or anything_except_u. So theres space.
+	Maybe let cx be u, and just take the space of cardinality never being u? Or do I want the 8 kinds of lazyeval back?
+UNQUOTE.
+	
+
 The tryRed op fixes the multiple cardinalities at once problem.
 ..
 FIXME Still need to choose between the (g (g (g u))) model of cardinality
@@ -16,7 +43,8 @@ something that would allow me to refer to an infinite depth of
 (infiniteCardinality (infiniteCardinality (infiniteCardinality u))) etc,
 and an infinite depth of those, and so on.
 Any cardinality the system has a node for,
-I want it to be able to define an infinite cardinality above that one.
+I want it to be able to define
+an infinite depth of infinite cardinalities above that one as a specific integer,
 Somewhere in there is the specific cardinality mr godel was working at,
 and I want a node for every statement godel ever wrote and a node that
 if evaled (its of course a lazyeval) disproves the consistency of his math axioms.
@@ -36,6 +64,15 @@ thats something much harder and I'm not sure if the recursions of infinite cardi
 Some things maybe the system doesnt need to be able to do, they're just too hard.
 So TODO choose a data structure for (getCardinality u) to return,
 then get back to coding the javascript.
+
+TODO?[
+	1 isAllowAxa //2 halfs of the system where (axa anything) either works as usual vs always infloops.
+	1 isCleanAkaIsAllowWiki //2 halfs of the system. the clean half cant see the dirty half. the dirty half can see dirty and clean.
+	1 isCallsAre3ParamsVs2 [update 4 instead of 3?] //2 half of the system. in one half, the cx param is always leaf. In the
+]
+
+TODO plan vararg syntax. in wikibinator it would be a func called on a growinglist,
+	but in hyperquasicrystal, since it has only 8 params, it would use pairs as a linkedlist.
 
 /* This software is opensource MIT licensed by Ben F Rayfield, and of course
 nobody owns the facts of math, even if theres a godel-like-number for such a fact.
@@ -93,14 +130,18 @@ New complete list of opcodes 2021-10-8+[
 	The universal function takes 8 params, so (u a b c d w x y z)->returnVal or does not halt or caller does not have enough cardinality.
 		All the opcodes are lambdas of 8 params, so they are overlapping, and which of them happens depends on o8.
 		
-	00000000
-	l //λa.λb.λc.λd.λw.λx.λy.λz.<left/green child of z, where forall j ((l j)(r j)) equals j>
+		
+	//00000000 //opcode
+	//opName(log2 of how much opcode space it takes, total 128)
 	
 	00000000
-	r //λa.λb.λc.λd.λw.λx.λy.λz.<right/blue child of z, where forall j ((l j)(r j)) equals j>
+	l(1 param) //λa.λb.λc.λd.λw.λx.λy.λz.<left/green child of z, where forall j ((l j)(r j)) equals j>
 	
 	00000000
-	tryRed //λa.λb.λc.λd.λw.λx.λy.λz.<If (getCardinality u) is enough, (red z),
+	r(1) //λa.λb.λc.λd.λw.λx.λy.λz.<right/blue child of z, where forall j ((l j)(r j)) equals j>
+	
+	00000000
+	tryRed(1) //λa.λb.λc.λd.λw.λx.λy.λz.<If (getCardinality u) is enough, (red z),
 		//else TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer>
 		//Forall z (red z) returns (h some_return_val) or TODO_op_for_semantic_of_red_edge_goes_here_to_mean_does_not_halt.
 		//(getCardinality u) returns the cardinality param of the "current" 3-way-call,
@@ -113,21 +154,63 @@ New complete list of opcodes 2021-10-8+[
 		//to choose between giving where the red edge points at
 		//vs saying theres not enuf cardinality.
 	
+	/*
+	00000000
+	lr(1) //λa.λb.λc.λd.λw.λx.λy.λz.(r (l z)) //an optimization useful for storing bitstrings as (pair (pair t t) (pair f t)) etc.
 	
 	00000000
-	h //λa.λb.λc.λd.λw.λx.λy.λz.(((s i) i) ((s i) i)) //a semantic for red edge to say "halted on y". (s i i (s i i)) is an infinite loop.
+	containsT(1) //λa.λb.λc.λd.λw.λx.λy.λz.(t or f, for does z recursively contain t). //optimization for sparse matrix etc.
 	
 	00000000
-	TODO_op_for_semantic_of_red_edge_goes_here_to_mean_does_not_halt
+	isBits(1) //λa.λb.λc.λd.λw.λx.λy.λz.(t or f, for is z (pair (pair t t) (pair f t)) etc, to any depth such as 2^40 bits.
 	
 	00000000
-	TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer
+	containsAxConstraint(1) //λa.λb.λc.λd.λw.λx.λy.λz.(t or f, for does z recursively contain (axa anything)). always f if not isAllowAxa.
+	*/
+	
+	TODO
+	isAllowAxa(1) //2 halfs of the system where (axa anything) either works as usual vs always infloops.
+	isCleanAkaIsAllowWiki(1) //2 halfs of the system. the clean half cant see the dirty half. the dirty half can see dirty and clean.
+	?? isCallsAre4ParamsVs3(1) //2 half of the system. in one half, the cx param is always leaf. In the other, it can be anything (of compatible cardinality).
 	
 	00000000
-	g //λa.λb.λc.λd.λw.λx.λy.λz.(((s i) i) ((s i) i)) //linkedlist of cardinality as unary number, used with (tii (g (g (g (g u)))) aFunc aParam) or ttt etc.
+	ax(2) //λa.λb.λc.λd.λw.λx.λy is halted if (y u) halts or if !isAllowAxa. λa.λb.λc.λd.λw.λx.λy.λz.(y (t z)) regardless of isAllowAxa.
+	//This op has a strange cardinality, that it can be computed at current cardinality, but it takes 1 higher cardinality to verify,
+	//which is why theres a !isAllowAxa section to not have to deal with that.
+	//This also makes quodel (godel-like-numbering) different or I'm not sure it can even be computed in the isAllowAxa section,
+	//but it can be in the !isAllowAxa section and you can do everything there if you want.
+	
 	
 	00000000
-	e //<getCardinality at this part of "the stack". Lambda calls take 3 params: cardinality, func, param.
+	h(2 params) //λa.λb.λc.λd.λw.λx.λy.λz.(((s i) i) ((s i) i)) //a semantic for red edge to say "halted on y". (s i i (s i i)) is an infinite loop.
+	
+	00000000
+	TODO_op_for_semantic_of_red_edge_goes_here_to_mean_does_not_halt(1)
+	
+	00000000
+	TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer(2)
+	
+	00000000
+	g(2) //λa.λb.λc.λd.λw.λx.λy.λz.(((s i) i) ((s i) i)) //linkedlist of cardinality as unary number, used with (tii (g (g (g (g u)))) aFunc aParam) or ttt etc.
+	
+	TODO if 4way calls (cardinality cx func param) instead of 3way (cardinality func param),
+	then need an op to put in the cx and to get cx (from "stack").
+	This would infloop (by design) if its not in the isCallsAre4ParamsVs3
+	lambdas. isclean, isAllowAxa, and isCallsAre4ParamsVs3 are like a few options or sections of the system,
+	that make it easier for people to use, but I'm not sure if all of those cost more than they're worth.
+	//
+	withCx(2) //λa.λb.λc.λd.λw.λx.λy.λz.<with cx of y, return (z u)>.
+	//
+	getCx(1) //λa.λb.λc.λd.λw.λx.λy.λz.<get the cx param in highest withCx on "the stack", or u if not isCallsAre4ParamsVs3>.
+	FIXME withCx probably has to go in the lazyeval ops, which makes them too big for a universal func of 8 params???
+	unless put cx in with cardinality since both of those are things that only exist on "the stack".
+	If limit cx to never be u, and cardinality is never u (cuz lowest is (g u)???),
+	then could get extra opcode space by putting the things that cant be u in the earlier params,
+	since o8 is the 0-7 bits of are the first 7 params u or anything_except_u. So theres space.
+	Maybe let cx be u, and just take the space of cardinality never being u? Or do I want the 8 kinds of lazyeval back?
+	
+	00000000
+	e(1) //<getCardinality at this part of "the stack". Lambda calls take 3 params: cardinality, func, param.
 	//Only func and param exist in halted lambdas.
 	//All lambdas are halted, and cardinality only exists inside the l/func and r/param childs of lazyeval* ops.
 	//A lazyeval is a lambda that waits on 1 more param to trigger lazyeval,
@@ -135,29 +218,29 @@ New complete list of opcodes 2021-10-8+[
 	//Thats how its a constant directedGraph.
 	
 	00000000
-	s //λa.λb.λc.λd.λw.λx.λy.λz.((x z)(y z)) //aka the s lambda of https://en.wikipedia.org/wiki/SKI_combinator_calculus
+	s(3) //λa.λb.λc.λd.λw.λx.λy.λz.((x z)(y z)) //aka the s lambda of https://en.wikipedia.org/wiki/SKI_combinator_calculus
 	
 	00000000
-	t //λa.λb.λc.λd.λw.λx.λy.λz.y //aka the church-true lambda //aka the k lambda of https://en.wikipedia.org/wiki/SKI_combinator_calculus
+	t(2) //λa.λb.λc.λd.λw.λx.λy.λz.y //aka the church-true lambda //aka the k lambda of https://en.wikipedia.org/wiki/SKI_combinator_calculus
 	
 	00000000
-	f //λa.λb.λc.λd.λw.λx.λy.λz.z //aka the church-false lambda
+	f(2) //λa.λb.λc.λd.λw.λx.λy.λz.z //aka the church-false lambda
 	
 	00000000
-	v //λa.λb.λc.λd.λw.λx.λy.λz.<<(r z) equals z> ? t : f> //aka returns t or f depending if z is u. forall j if (r j) equals j then j equals u.
+	v(1) //λa.λb.λc.λd.λw.λx.λy.λz.<<(r z) equals z> ? t : f> //aka returns t or f depending if z is u. forall j if (r j) equals j then j equals u.
 	
 	00000000
-	p //λa.λb.λc.λd.λw.λx.λy.λz.((z x) y) //aka church-pair lambda. forall j forall k (p j k t) equals j. forall j forall k (p j k f) equals k.
+	p(3) //λa.λb.λc.λd.λw.λx.λy.λz.((z x) y) //aka church-pair lambda. forall j forall k (p j k t) equals j. forall j forall k (p j k f) equals k.
 	
 	00000000 //if first param is anything_except_leaf this happens.
-	n //λa.λb.λc.λd.λw.λx.λy.λz.(a(p(uabcdwxy)z)) //how most human-readable functions are made.
+	n(6) //λa.λb.λc.λd.λw.λx.λy.λz.(a(p(uabcdwxy)z)) //how most human-readable functions are made.
 		//aka a is funcBody, called on datastruct that includes all the λa.λb.λc.λd.λw.λx.λy.λz params. can recurse a.
 	
 	00000000
-	wiki λa.λb.λc.λd.λw.λx.λy.λz.<whatever map of node->node the "wiki" is (all nondeterminism goes here only in dirty lambdas), return (thatFunc z)>
+	wiki(1) λa.λb.λc.λd.λw.λx.λy.λz.<whatever map of node->node the "wiki" is (all nondeterminism goes here only in dirty lambdas), return (thatFunc z)>
 	
 	00000000
-	isClean λa.λb.λc.λd.λw.λx.λy.λz.<<is z a clean (instead of dirty) lambda> ? t : f>.
+	isClean(1) λa.λb.λc.λd.λw.λx.λy.λz.<<is z a clean (instead of dirty) lambda> ? t : f>.
 	There are 2 universal functions, cleanLeaf and dirtyLeaf.
 	cleanLeaf can only ever generate clean nodes,
 		and its the only one that can intheory run in manifold based kinds of hardware (in theory, if it can ever do that at all).
@@ -173,9 +256,17 @@ New complete list of opcodes 2021-10-8+[
 		because its a kind of math where every calculation succeeds, but you can still choose not to explore deeper into any part you dont want to.
 	
 	00000000
-	truncateToClean
+	truncateToClean(1)
 	FIXME should it just infloop if clean is called on dirty, or should it call truncateToClean?
 	
+	00000000
+	truncateToCardinality(1)
+	
+	/* red and doesItHaltAtLowerCardinalityThanCaller
+	will instead be computed by the tryRed opcode, so commentedOut this.
+	..
+	..
+	..
 	FIXME do I need a red opcode or a doesItHaltAtLowerCardinalityThanCaller opcode or both? red is 1 higher cardinality than doesItHalt, cuz you can only know if something will halt if its at least 1 lower cardinality than you. (g u) is the lowest cardinality. (g (g u)) is the next up. (g (g (g u))) is the next up from that, and so on.
 	Red edge is at 1 higher cardinality than self since it knows if self will halt if self is called on u
 	(TODO red edge is mostly useful from lazyeval/iii/itt/iit/iti objects, so its not exactly "if self will halt".
@@ -188,11 +279,15 @@ New complete list of opcodes 2021-10-8+[
 	//λa.λb.λc.λd.λw.λx.λy.λz.<If <at cardinality (nextLowerCardinality (getCardinality u))> does (z u) halt, and if so return (h (z u)) else return one of
 	//	TODO_op_for_semantic_of_red_edge_goes_here_to_mean_does_not_halt or
 	//	TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer>
-	
+	..
 	//see comments around "red" opcode. I'm unsure if should have red, doesItHaltAtLowerCardinalityThanCaller, or both.
 	//Must be at least 1 of those 2, cuz its the only thing cardinality is useful for in this system.
 	doesItHaltAtLowerCardinalityThanCaller
 	00000000
+	*/
+	
+	
+	
 	
 	//8 kinds of lazyeval (could have been 1 kind but would be harder for people to read the i's and t's inside them,
 	//and would be and less efficient, without the 8), that choose for 3 childs to be lazyevals vs literals:
@@ -216,6 +311,7 @@ New complete list of opcodes 2021-10-8+[
 	
 	
 	"FIXME push x y z back to w x y, and z is ignored but triggers lazyeval"
+	"FIXME also put cx in, and since u is not a cardinality, use only half as much opcode space, but twice as much to put cx in, so same, but cx is always u where !isCallsAre4ParamsVs3"
 	00000000
 	iii //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return ((y u) (z u))>  //lazyEval identityFunc identityFunc identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 		//red edge would return (h ((y u) (z u))) if halted, or 1 of these 2 (todo finish defining those) ops (might just be 2 constants, or take 1 param each as some kind of "message"?):
@@ -223,27 +319,34 @@ New complete list of opcodes 2021-10-8+[
 			//TODO_op_for_semantic_of_could_not_use_red_edge_cuz_caller_doesnt_have_enuf_cardinality_to_get_that_answer
 	
 	"FIXME push x y z back to w x y, and z is ignored but triggers lazyeval"
+	"FIXME also put cx in, and since u is not a cardinality, use only half as much opcode space, but twice as much to put cx in, so same, but cx is always u where !isCallsAre4ParamsVs3"
 	00000000
 	iit //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return ((y u) z)> //lazyEval identityFunc identityFunc true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
 	"FIXME push x y z back to w x y, and z is ignored but triggers lazyeval"
+	"FIXME also put cx in, and since u is not a cardinality, use only half as much opcode space, but twice as much to put cx in, so same, but cx is always u where !isCallsAre4ParamsVs3"
 	00000000
 	iti //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return (y (z u))> //lazyEval identityFunc true identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
 	"FIXME push x y z back to w x y, and z is ignored but triggers lazyeval"
+	"FIXME also put cx in, and since u is not a cardinality, use only half as much opcode space, but twice as much to put cx in, so same, but cx is always u where !isCallsAre4ParamsVs3"
 	00000000
 	itt //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality (x u), return (y z)> //lazyEval identityFunc true true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
 	/*
+	"FIXME push x y z back to w x y, and z is ignored but triggers lazyeval"
 	00000000
 	tii //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality x, return ((y u) (z u))> //lazyEval true identityFunc identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
+	"FIXME push x y z back to w x y, and z is ignored but triggers lazyeval"
 	00000000
 	tit //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality x, return ((y u) z)> //lazyEval true identityFunc true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
+	"FIXME push x y z back to w x y, and z is ignored but triggers lazyeval"
 	00000000
 	tti //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality x, return (y (z u))> //lazyEval true true identityFunc of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	
+	"FIXME push x y z back to w x y, and z is ignored but triggers lazyeval"
 	00000000
 	ttt //λa.λb.λc.λd.λw.λx.λy.λz.<with cardinality x, return (y z)> //lazyEval true true true of 3-way call. (i j u) uses j as a lazyEval. (t j u) uses j as a quoted literal.
 	*/
