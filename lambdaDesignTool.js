@@ -50,7 +50,7 @@ var iotaMeta = {
 	canDeriveANodeWhoseExistenceClaimsACertainLambdaCallHaltsAkaAxConstraint: false,
 	hasCxParam: false,
 	hasCardinalityParam: false,
-	canBeComputedAsATimelessEnergyFunc: false,
+	REMOVED cuz every well defined math structure can probably be approximated arbitrarily close, but what I meant is some far more efficiently than others, canBeComputedAsATimelessEnergyFunc: false,
 };
 
 var urbitNockMeta = {
@@ -65,7 +65,7 @@ var urbitNockMeta = {
 	canDeriveANodeWhoseExistenceClaimsACertainLambdaCallHaltsAkaAxConstraint: false,
 	hasCxParam: false,
 	hasCardinalityParam: false,
-	canBeComputedAsATimelessEnergyFunc: false,
+	REMOVED cuz every well defined math structure can probably be approximated arbitrarily close, but what I meant is some far more efficiently than others, canBeComputedAsATimelessEnergyFunc: false,
 };
 
 var hyperquasicrystalMeta = {
@@ -80,7 +80,7 @@ var hyperquasicrystalMeta = {
 	canDeriveANodeWhoseExistenceClaimsACertainLambdaCallHaltsAkaAxConstraint: true, //but cant use this with some other parts like mapping the nodes 1 to 1 with integers in finite time each
 	//hasCxParam: ? allow both ?,
 	hasCardinalityParam: true,
-	canBeComputedAsATimelessEnergyFunc: true,
+	REMOVED cuz every well defined math structure can probably be approximated arbitrarily close, but what I meant is some far more efficiently than others, canBeComputedAsATimelessEnergyFunc: true,
 };
 
 var wikibinator106Meta = {
@@ -94,7 +94,7 @@ var wikibinator106Meta = {
 	canDeriveANodeWhoseExistenceClaimsACertainLambdaCallHaltsAkaAxConstraint: true,
 	hasCxParam: false,
 	hasCardinalityParam: false,
-	canBeComputedAsATimelessEnergyFunc: false,
+	REMOVED cuz every well defined math structure can probably be approximated arbitrarily close, but what I meant is some far more efficiently than others, canBeComputedAsATimelessEnergyFunc: false,
 };
 
 var wikibinator107Meta = {
@@ -107,7 +107,7 @@ var wikibinator107Meta = {
 	canDeriveANodeWhoseExistenceClaimsACertainLambdaCallHaltsAkaAxConstraint: true,
 	hasCxParam: true,
 	hasCardinalityParam: false,
-	canBeComputedAsATimelessEnergyFunc: false,
+	REMOVED cuz every well defined math structure can probably be approximated arbitrarily close, but what I meant is some far more efficiently than others, canBeComputedAsATimelessEnergyFunc: false,
 };
 
 /*
