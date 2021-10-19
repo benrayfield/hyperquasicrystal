@@ -16,12 +16,8 @@ are involved, does it have clean vs dirty, does it have gasMem, gasTime,
 recursiveExpireTime, and are those per thread/greenthread/etc or per VM, etc?
 
 
+TODO? merge these 2?: isPatternCalculusFunc canAlwaysDetectLambdaEquality?
 
-/*var LambdaDesignTool = function(){
-};
-*/
-
-/*
 FIXME, make this a big bayesNode, of the sparse 3^numberOfBayesVars kind,
 so can explore what combos of these things allow vs prevent,
 such as canDeriveQuestionDoesPEqualNP cant be used with dirty lambdas,
@@ -111,9 +107,16 @@ var wikibinator107Meta = {
 };
 
 /*
+???this might be too different from lambdas to usefully compare here, since lambdas are superexponentially
+more sparse than constant (such as 2 or 3 or a googolplex) dimensional cellular automata.
 var rule110Meta = {
-	
+	canProveTrueEqualsFalse: false,
+	leafsAreVarSize: false,
+	hasCxParam: false,
+	hasCardinalityParam: false,
+	canAlwaysDetectLambdaEquality: false,
 };
+*/
 
 var occamsfuncerMeta = {
 };
