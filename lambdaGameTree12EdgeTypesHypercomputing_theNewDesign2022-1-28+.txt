@@ -1,0 +1,132 @@
+I think I've found a 12-way https://en.wikipedia.org/wiki/Game_tree that contains the game-trees for chess, go, pacman, and every possible game, including every possible lambda function. Think of it as a bunch of icons, and theres 12 colored arrows outward from each icon to some 12 icons (may be itself, or multiple arrows point at same node, or 12 different nodes). Which 12 is already decided. There is no time. All possible pasts presents and futures, including time-crystals and other strange manifolds, may be inside it. Every node has an infinite number of paths to every node, including back to itself. It has a place to put dataurls and file types by content such as "image/jpeg" then [bytes of jpg file] and to memory-map float64 arrays, int arrays, etc. But its still just a universal lambda function of 7 params, which at most 6 ever happen since everything is by lazyeval. It is potentially GPU-optimizable, though it wont be my fastest universal function since its more for educational and security research and experimental purposes. It could potentially run on all the blockchains at once and as an independent sidechain and on GPUs, depending on the various implementations. It has only loops, no open-strings, like in physics. --I said in https://www.facebook.com/ben.f.rayfield/posts/5119531101392862
+
+
+//This is a game-tree that contains all possible game-trees including the chess game-tree, the Go game-tree, every possible AI, neuralnet,
+//musical instrument, pic, video, text, and every possible lambda function... That means it contains every possible physics simulation up to lambda cardinality,
+//even though physics might be higher cardinality (probably is the highest possible cardinality). Its purpose is to have a constant branching-factor (12)
+//that sparsely navigates the space of all possible lambdas, and that every node can reach every other node. You could, for example, do pagerank on the lambdas, or variants of it.
+//
+//a map of every positive integer to 12 specific positive integers, that defines hypercomputing of all possible lambdas (the cardinality just above the cardinality of the lambdas)
+//and can actually be used to compute things, though some edges wont be able to be filled in without actually doing hypercomputing so thats just a math abstraction at least for now,
+//but maybe some kind of quantum-like or other strange kind of computer could
+//
+//Its a universal lambda of 7 params but max of 6 params exist in nodes since its done by lazyEval.
+//
+//In the abstract math, every node is a unique integer and all 12 edges are filled in and consistent.
+//
+//the sparse "turing tape" is 2 linkedlists made of churchPairs. The first thing in one list is registerA. The first thing in the other list is registerB.
+//The turing tape is a pair of those 2 linkedlists.
+//registerA and registerB are used in some of the tape* ops.
+//If a node is not a pair of 2 nonempty linkedlists, then those ops/edges to to u (the universal lambda).
+//
+//The universal lambda is a function of 7 params. The first 4 params choose between 9 opcodes, depending if they are each u or anything except u.
+//If the first param is NOT u, then the first param is a lambda of 6 params: (u funcBody a b c d e f)->(funcBody (pair (u funcBody a b c d e) f)).
+//If the first param is u, then it chooses from the other 8 opcodes which are: s t f l r isleaf pair typeval, which each use the last 3 params.
+//s is Lx.Ly.Lz.xz(yz), the last 3 params. aka the s lambda of SKICalculus.
+//t is Ly.Lz.y, the last 2 params. aka churchTrue. aka the k lambda of SKICalculus.
+//f is Lz.z, or view it as Ly.Lz.z, the last 1 param. aka churchFalse if you use the last 2 params, as it ignores everything except the last param.
+//l is get left/func child, the node.func edge.
+//r is get right/param child, the node.param edge.
+//isleaf tells if its param is the universal lambda, which has cacheOpcode of 1, and which can be identified by graph topology as its the only node whose param is itself. u.param==u.
+//	also, u.func==identityFunc, which is (f u) in the 2 param view of f.
+//pair is the churchPair lambda Lx.Ly.Lz.zxy, and can be used with t and f to get the 2 things in the pair.
+//	(pair a b t)->a. (pair a b f)->b. (pair a b) is halted. (pair a) is halted. pair is halted.
+//typeval is the same as pair but is a semantic for things like (typeval "image/jpeg" [bytes of jpg file]).
+//	bitstrings are pairs of pairs of pairs... of t and f, complete binary trees of bits, and can be stored in arrays as optimization in some cases, and can put some literal bits in 256 bit merkle ids,
+//	though you dont have to generate global id256s as they are lazyEvaled and are just a lambda called on a lambda to return such 256 bits.
+//	TODO put Int32Array and an int from int toExclusive range (powOf2 aligned) in node, after get the basics working.
+//
+let Node = function(isLeaf,func,param){
+	
+	//a bit
+	this.isLeaf = isLeaf;
+	
+	//an integer from 1 to 127. leaf is 1. see "opbit" in wikibinator and hyperquasicrystal and occamsfuncer for what this number does.
+	this.cacheOpcode = TODO;
+	
+	
+	
+	
+	
+	
+	//left child in binary forest. forall x, (func x (param x)) equals x. (func u) is identityFunc. (param u) is u. u is a universal lambda function, the root of this system.
+	this.func = func;
+	
+	//right child in binary forest. forall x, (func x (param x)) equals x. (func u) is identityFunc. (param u) is u. u is a universal lambda function, the root of this system.
+	this.param = param;
+	
+	//This is how to call a lambda on a lambda and get the return value (this edge points at: (u returnVal)),
+	//or get the statement that it doesnt halt (this edge points at: u). You might never see this return u since
+	//it can take infinite time and memory in many cases and even when it doesnt its often hard to prove, so in that cases you'd just give up early on knowing what node this edge points at.
+	//All edges point at nodes that are a binary forest that leads to u on all paths thru node.func and node.param. The other 10 edges are just caches and can be derived and deduped.
+	//
+	//If the lambda call (this.func.param this.param.param) returns ret, then this edge points at (u ret).
+	//If the lambda call (this.func.param this.param.param) does not halt, then this edge points at u.
+	//(or you might not ever be able to compute what this edge points at, even though the math is completely consistent).
+	//
+	//tapeLazyReturn and lazyReturn are the only edges/ops that are at hypercomputing cardinality (the cardinality just above the lambdas). halting oracles are not possible, but with cardinalities its still consistent.
+	this.lazyReturn = null;
+	
+	
+	
+	
+	
+	//replaces registerA with registerA.func
+	//
+	//
+	//If a node is not a pair of 2 nonempty linkedlists, then those ops/edges to to u (the universal lambda).
+	this.tapeFunc = null;
+	
+	//replaces registerA with registerA.param
+	//
+	//
+	//If a node is not a pair of 2 nonempty linkedlists, then those ops/edges to to u (the universal lambda).
+	this.tapeParam = null;
+	
+	//replaces registerA with registerA.lazyReturn.
+	//
+	//tapeLazyReturn and lazyReturn are the only edges/ops that are at hypercomputing cardinality (the cardinality just above the lambdas). halting oracles are not possible, but with cardinalities its still consistent.//
+	//
+	//If a node is not a pair of 2 nonempty linkedlists, then those ops/edges to to u (the universal lambda).
+	this.tapeLazyReturn = null;
+	
+	
+	//Keeps the top 2 things in the linkedlist (registerA and registerB) and pops from the left linkedlist and pushes that onto the right linkedlist
+	//(then puts registerA and registerB back and makes a pair of it, that becomes the next "turing tape state" (thats an immutable/stateless lambda)
+	//This is like a turing head moving left.
+	//
+	//If a node is not a pair of 2 nonempty linkedlists, then those ops/edges to to u (the universal lambda).
+	this.tapeLeft = null;
+	
+	//Keeps the top 2 things in the linkedlist (registerA and registerB) and pops from the right linkedlist and pushes that onto the left linkedlist
+	//(then puts registerA and registerB back and makes a pair of it, that becomes the next "turing tape state" (thats an immutable/stateless lambda).
+	//This is like a turing head moving right.
+	//
+	//If a node is not a pair of 2 nonempty linkedlists, then those ops/edges to to u (the universal lambda).
+	this.tapeRight = null;
+	
+	//replaces registerA with registerB
+	//
+	//If a node is not a pair of 2 nonempty linkedlists, then those ops/edges to to u (the universal lambda).
+	this.tapeCopy = null;
+	
+	//replaces registerB with registerA
+	//
+	//If a node is not a pair of 2 nonempty linkedlists, then those ops/edges to to u (the universal lambda).
+	this.tapePaste = null;
+	
+	//Replaces registerA with (u registerA (u registerB)) aka ((u registerA) (u registerB)).
+	//
+	//If a node is not a pair of 2 nonempty linkedlists, then those ops/edges to to u (the universal lambda).
+	this.tapeMakeLazy = null;
+	
+	//
+	//
+	//If a node is not a pair of 2 nonempty linkedlists, then those ops/edges to to u (the universal lambda).
+	this.theUniversalTape = null; //so every node can reach a certain node thats a sparse "turing tape" that can reach all possible nodes. this makes it 12 way. this is a constant.
+
+};
+
+let u = TODO;
+
+let theUniversalTape = TODO;
