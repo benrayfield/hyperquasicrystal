@@ -6,6 +6,10 @@ Big changes in that, compared to the only similar design below.
 
 The ids will look like λDY8pvwNhj5DtiJBdyzN5H5kS1Hrc3286zZ8mKKnmkPHj similar to #hashtag . Thats a 256 bit number. Nobody can change its relations to other numbers. Hopefully people will use these like hashtags, and as javascript lambdas like plus = λDY8pvwNhj5DtiJBdyzN5H5kS1Hrc3286zZ8mKKnmkPHj; seven = plus(5)(2); addFive = plus(5); seven==addFive(2) is true, and plus(2)(5)==plus(5)(2) is true. These are all lambdas, and I have lambda equality working in earlier versions. ''+plus(5) would give another such id, and so would ''+plus(2)(5) and ''+plus(5)(2) which would give the same id, even though ''+plus(2) and ''+plus(5) are different ids. ''+identityFunc(5) would give the id of 5, since 5 is not a lambda you have to give it as a param to something before it becomes one.
 
+Λ is prefix of wikibinator202 ids. 
+λ is prefix of hyperquasicrystal ids, whether they are in standalone hyperquasicrystal or mounted in a wikibinator202 opcode its the same id.
+Hyperquasicrystal will be 1 of the opcodes in wikibinator202 which is a less strict more optimizable universal function.
+
 ---
 
 (TODO) A 7 (UPDATE: 8) parameter universal function defined as an energy function on stochastic pointers in a hypercomputation directedGraph. A universal function approximator. A way of organizing possibly every or nearly every statement in every math book ever written. An actually callable system of lambdas for massively multiplayer gaming and number crunching on GPU and possibly hypercomputation-capable manifold based hardware.
