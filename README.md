@@ -4,7 +4,7 @@ UPDATE: just 1 cardinality above the lambdas, as in https://github.com/benrayfie
 
 Big changes in that, compared to the only similar design below.
 
-The ids will look like λDY8pvwNhj5DtiJBdyzN5H5kS1Hrc3286zZ8mKKnmkPHj similar to #hashtag . Thats a 256 bit number. Nobody can change its relations to other numbers. Hopefully people will use these like hashtags, and as javascript lambdas like plus = λDY8pvwNhj5DtiJBdyzN5H5kS1Hrc3286zZ8mKKnmkPHj; seven = plus(5)(2); addFive = plus(5); seven==addFive(2) is true, and plus(2)(5)==plus(5)(2) is true. These are all lambdas, and I have lambda equality working.
+The ids will look like λDY8pvwNhj5DtiJBdyzN5H5kS1Hrc3286zZ8mKKnmkPHj similar to #hashtag . Thats a 256 bit number. Nobody can change its relations to other numbers. Hopefully people will use these like hashtags, and as javascript lambdas like plus = λDY8pvwNhj5DtiJBdyzN5H5kS1Hrc3286zZ8mKKnmkPHj; seven = plus(5)(2); addFive = plus(5); seven==addFive(2) is true, and plus(2)(5)==plus(5)(2) is true. These are all lambdas, and I have lambda equality working in earlier versions. ''+plus(5) would give another such id, and so would ''+plus(2)(5) and ''+plus(5)(2) which would give the same id, even though ''+plus(2) and ''+plus(5) are different ids. ''+identityFunc(5) would give the id of 5, since 5 is not a lambda you have to give it as a param to something before it becomes one.
 
 ---
 
