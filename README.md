@@ -10,6 +10,8 @@ The ids will look like λDY8pvwNhj5DtiJBdyzN5H5kS1Hrc3286zZ8mKKnmkPHj similar to
 λ is prefix of hyperquasicrystal ids, whether they are in standalone hyperquasicrystal or mounted in a wikibinator202 opcode its the same id.
 Hyperquasicrystal will be 1 of the opcodes in wikibinator202 which is a less strict more optimizable universal function.
 
+While there are details to work out, the topology of hyperquasicrystal is an actual quasicrystal and is turing-complete.
+
 ---
 
 (TODO) A 7 (UPDATE: 8) parameter universal function defined as an energy function on stochastic pointers in a hypercomputation directedGraph. A universal function approximator. A way of organizing possibly every or nearly every statement in every math book ever written. An actually callable system of lambdas for massively multiplayer gaming and number crunching on GPU and possibly hypercomputation-capable manifold based hardware.
