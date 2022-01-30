@@ -10,7 +10,7 @@ The ids will look like λDY8pvwNhj5DtiJBdyzN5H5kS1Hrc3286zZ8mKKnmkPHj similar to
 λ is prefix of hyperquasicrystal ids, whether they are in standalone hyperquasicrystal or mounted in a wikibinator202 opcode its the same id.
 Hyperquasicrystal will be 1 of the opcodes in wikibinator202 which is a less strict more optimizable universal function.
 
-While there are details to work out, the topology of hyperquasicrystal is an actual quasicrystal and is turing-complete, and that includes that it will compute its own ids and can opensource-fork-edit in realtime at gaming-low-lag replace or add new kinds of ids (just another lambda that makes ids of lambdas)... Any id generator which can not generate the id of itself, without knowing that its parameter happens to be itself, is automatically invalid.
+While there are details to work out, the topology of hyperquasicrystal is an actual quasicrystal and is turing-complete, and that includes that it will compute its own ids and can opensource-fork-edit in realtime at gaming-low-lag replace or add new kinds of ids (just another lambda that makes ids of lambdas)... Any id generator which can not generate the id of itself, and of a few random other lambdas (some of which are the other id generators) without knowing that its parameter happens to be itself, is automatically invalid.
 
 ---
 
