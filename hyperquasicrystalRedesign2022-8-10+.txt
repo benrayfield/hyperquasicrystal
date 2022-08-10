@@ -1,0 +1,28 @@
+A universal func of 8 params, that does 3-way calls of: cardinality, func, param. All 3 of those are made of binary-forest where all paths lead to the shared leaf, and theres at most 8 curries on l before getting back to that leaf, but the last param is never stored since its only stored as lazyevals. First bit (being leaf vs any nonleaf, aka an opbit) chooses between lambdaOf6Params (funcBody is at second param) vs next 3-4 bits choose between approx 16 opcodes, but one of the opcodes (threewaycall/tricall) takes 4 params. I'll write out the opcode tree next...
+
+//prefix these by number of params it takes. If sum pow(2,numParams) for each of those, and that sum is at most 256, the opcodes fit.
+
+3:
+	1: l
+	1: r
+	1: isleaf
+	1: getcard	ignore //get cardinality running at right now, which is found in (tricall cardinality func param u) --red--> (didred val), or if
+	1: rededge	from	//ask whats across a red edge, normally from a tricall but can be from anything. if not from tricall then red edge goes to leaf.
+	1: cantred	ignore //a semantic meaning caller does not have enough cardinality
+	2: didred	retval		ignore	//didred is the semantic, and retval is what rededge returned. caller doesnt have enuf cardinality then --red--> (cantred val) but its stored as to a didred.
+
+4:
+	2: vulist	viewme	param //TODO "view as [] list", makes something display like "infcur/[] in wikibinator203 which is vararg" but is actually not vararg.
+	2: vuvarg	viewme	param //TODO view as some kind of vararg, even though at the data layer its not vararg, might use a linkedlist of pairs or something.
+	2: t
+	2: f
+
+4:
+	3: pair
+	3: typeval
+
+3: s
+
+4: tricall	card	func	param	ignore
+
+7: fnbody	a		b		c		x		y		z
