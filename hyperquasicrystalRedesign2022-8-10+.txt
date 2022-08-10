@@ -2,7 +2,7 @@ A universal func of 8 params, that does 3-way calls of: cardinality, func, param
 
 //prefix these by number of params it takes. If sum pow(2,numParams) for each of those, and that sum is at most 256, the opcodes fit.
 
-3:
+4:
 	1: l
 	1: r
 	1: isleaf
