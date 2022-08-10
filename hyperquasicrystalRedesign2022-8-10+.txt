@@ -11,6 +11,8 @@ A universal func of 8 params, that does 3-way calls of: cardinality, func, param
 	1: cantred	ignore //a semantic meaning caller does not have enough cardinality
 	2: didred	retval		ignore	//didred is the semantic, and retval is what rededge returned. caller doesnt have enuf cardinality then --red--> (cantred val) but its stored as to a didred.
 
+1: nohalt ignore //a semantic similar to cantred, except it did red but red said it didnt halt. (rededge (tricall card func param)) --> nohalt, (didred retval), or cantred.
+
 4:
 	2: vulist	viewme	param //TODO "view as [] list", makes something display like "infcur/[] in wikibinator203 which is vararg" but is actually not vararg.
 	2: vuvarg	viewme	param //TODO view as some kind of vararg, even though at the data layer its not vararg, might use a linkedlist of pairs or something.
