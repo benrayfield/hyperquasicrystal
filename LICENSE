@@ -1,3 +1,11 @@
+Files up to 2023-11-5 are MIT license, but agien dir uses same license as wikibinator203. See license in that js file.
+
+QUOTE
+const agien = {
+	license: 'same as wikibinator203 license: Wikibinator203 license: The whole turing-complete and hypercomputing space derived from this universal combinator/lambda or forks of it and other software (prototype by Ben F Rayfield Y2023), including every lambda of this kind called on a lambda to find/create a lambda or which never halts (which the author of is defined as the universal combinator since these are tiny shared math objects), is offered to everyone under opensource GNU AGPL 3 license, plus these extra permissions: * Classpath/linking exception. Hook it to whatever you want, but within the space (no proprietary lambdas) is AGPL. * License is instantly unterminated when you start obeying it. * Free speech absolutism in the evilbit=true namespace in which all possible lambdas are allowed, even viruses etc.',
+	description: 'AGI potential ENergy function, similar to wikibinator but much simpler. The simplest test case of this would be to emulate the iota combinator aka (Pair S T) aka ((λa.λb.λc.cab)(λd.λe.λf.df(ef))(λg.λh.g)).',
+UNQUOTE
+
 MIT License
 
 Copyright (c) 2021 benrayfield
